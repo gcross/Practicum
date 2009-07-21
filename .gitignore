@@ -1,0 +1,5 @@
+_region_*
+*.log
+*.aux
+*.prv
+*.pdf
