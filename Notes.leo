@@ -14,7 +14,7 @@
 <v t="gcross.20090728105516.1233" a="E"><vh>@settings</vh>
 <v t="gcross.20090728105516.1234"><vh>@string ipython_argv = ipython -pylab</vh></v>
 </v>
-<v t="gcross.20090728105516.1228" a="E"><vh>Proof that phase form is valid</vh>
+<v t="gcross.20090728105516.1228"><vh>Proof that phase form is invalid</vh>
 <v t="gcross.20090728110622.1243" a="E"><vh>via f</vh>
 <v t="gcross.20090728110622.1241"><vh>f</vh></v>
 <v t="gcross.20090728110622.1244"><vh>test run</vh></v>
