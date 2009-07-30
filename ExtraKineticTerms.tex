@@ -1,7 +1,7 @@
 %@+leo-ver=4-thin
 %@+node:gcross.20090730140239.1303:@thin ExtraKineticTerms.tex
 %@@language latex
-\documentclass[twocolumn,showpacs,preprintnumbers,amsmath,amssymb,nofootinbib,pra,floatfix]{revtex4}
+\documentclass[onecolumn,,amsmath,amssymb,nofootinbib,floatfix]{revtex4}
 
 \input{notes-prelude.in}
 
@@ -12,10 +12,10 @@ Let the wave function be defined by $\Psi$ (implicitly a function of position), 
 Ergo, we have that
 $$
 \begin{aligned}
-&\coip{\Psi}{\hat T}{\Psi} \\
-&\quad = \Psi^* \hat T \Psi, \\
-&\quad = \Psi^* \left[-\Delta + A^2 - 2i(A\cdot \nabla) - i(\Div A)\right] \Psi, \\
-&\quad = \paren{A+\nabla \phi}^2 + \psi\Delta \psi \\ &\qquad\qquad - i\left\{\Delta \phi + \Div A + 2\psi\nabla\psi \cdot (A+\nabla\phi)\right\}
+\coip{\Psi}{\hat T}{\Psi}
+&= \Psi^* \hat T \Psi, \\
+&= \Psi^* \left[-\Delta + A^2 - 2i(A\cdot \nabla) - i(\Div A)\right] \Psi, \\
+&= \paren{A+\nabla \phi}^2 + \psi\Delta \psi - i\left\{\Delta \phi + \Div A + 2\psi\nabla\psi \cdot (A+\nabla\phi)\right\}
 \end{aligned}
 $$
 
