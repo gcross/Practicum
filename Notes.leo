@@ -9,11 +9,12 @@
 <preferences/>
 <find_panel_settings/>
 <vnodes>
-<v t="gcross.20090728105516.1229" str_leo_pos="3,0,1"><vh>@chapters</vh></v>
+<v t="gcross.20090728105516.1229" str_leo_pos="3"><vh>@chapters</vh></v>
 <v t="gcross.20090728105516.1232"><vh>@ipy-startup</vh></v>
-<v t="gcross.20090728105516.1233" a="E"><vh>@settings</vh>
+<v t="gcross.20090728105516.1233"><vh>@settings</vh>
 <v t="gcross.20090728105516.1234"><vh>@string ipython_argv = ipython -pylab</vh></v>
 </v>
+<v t="gcross.20090730140239.1300"><vh>Numerical analyses</vh>
 <v t="gcross.20090728105516.1228"><vh>Proof that phase form is invalid</vh>
 <v t="gcross.20090728110622.1243" a="E"><vh>via f</vh>
 <v t="gcross.20090728110622.1241"><vh>f</vh></v>
@@ -23,6 +24,14 @@
 <v t="gcross.20090728105516.1230"><vh>f'</vh></v>
 <v t="gcross.20090728110622.1239"><vh>f'</vh></v>
 <v t="gcross.20090728110622.1240"><vh>test run</vh></v>
+</v>
+</v>
+<v t="gcross.20090729160450.1249"><vh>Check of backflow terms</vh>
+<v t="gcross.20090729160450.1250"><vh>f</vh></v>
+<v t="gcross.20090729160450.1252"><vh>g</vh></v>
+<v t="gcross.20090729160450.1253"><vh>h</vh></v>
+<v t="gcross.20090729160450.1254"><vh>pfun</vh></v>
+<v t="gcross.20090729160450.1251"><vh>check</vh></v>
 </v>
 </v>
 </vnodes>
@@ -86,5 +95,40 @@ for n in xrange(angles.shape[0]):
 
 print laplacian
 </t>
+<t tx="gcross.20090729160450.1249"></t>
+<t tx="gcross.20090729160450.1250">def f(r_i,r_j):
+    return dot(
+        (r_i-r_j)/norm(r_i-r_j),
+        array((r_i[1],-r_i[0]))/norm(r_i)
+    )
+</t>
+<t tx="gcross.20090729160450.1251">values = rand(2*2)
+
+laplacian = sum(
+    derivative(partial(pfun,h,n,values),values[n],dx=1e-6,n=2,order=13)
+    for n in xrange(len(values))
+    )
+
+print laplacian
+</t>
+<t tx="gcross.20090729160450.1252">def g(coordinates):
+    return sum(
+        f(coordinates[i],coordinates[j])
+        for i in xrange(len(coordinates))
+        for j in xrange(len(coordinates))
+        if i != j
+    )
+</t>
+<t tx="gcross.20090729160450.1253">def h(values):
+    return g(values.reshape((len(values)/2,2)))
+</t>
+<t tx="gcross.20090729160450.1254">def pfun(fn,n,values,new_value):
+    old_value = values[n]
+    values[n] = new_value
+    result = fn(values)
+    values[n] = old_value
+    return result
+</t>
+<t tx="gcross.20090730140239.1300"></t>
 </tnodes>
 </leo_file>
