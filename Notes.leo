@@ -34,6 +34,12 @@
 <v t="gcross.20090729160450.1251"><vh>check</vh></v>
 </v>
 </v>
+<v t="gcross.20090730140239.1301"><vh>LaTeX Notes</vh>
+<v t="gcross.20090730140239.1305"><vh>@thin SConstruct</vh></v>
+<v t="gcross.20090730140239.1304"><vh>@thin notes-prelude.in</vh></v>
+<v t="gcross.20090730140239.1303"><vh>@thin ExtraKineticTerms.tex</vh></v>
+<v t="gcross.20090730140239.1306"><vh>@thin SPFixedPhaseApproximation.tex</vh></v>
+</v>
 </vnodes>
 <tnodes>
 <t tx="gcross.20090728105516.1228"></t>
@@ -130,5 +136,6 @@ print laplacian
     return result
 </t>
 <t tx="gcross.20090730140239.1300"></t>
+<t tx="gcross.20090730140239.1301"></t>
 </tnodes>
 </leo_file>

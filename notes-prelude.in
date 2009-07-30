@@ -1,0 +1,30 @@
+%@+leo-ver=4-thin
+%@+node:gcross.20090730140239.1304:@thin notes-prelude.in
+%@@language latex
+
+
+\usepackage{mathrsfs,amsthm}
+%\usepackage{clrscode}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corolary}{Corolary}
+
+\newenvironment{definition}[1][Definition]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newenvironment{example}[1][Example]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Remark]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newcommand{\lst}{\vec}
+\newcommand{\set}{\bar}
+
+\newcommand{\Div}{\text{\textbf{div}}\,}
+
+\input{macros.tex}
+%@nonl
+%@-node:gcross.20090730140239.1304:@thin notes-prelude.in
+%@-leo

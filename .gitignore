@@ -3,3 +3,6 @@ _region_*
 *.aux
 *.prv
 *.pdf
+*.dvi
+*~
+.scons*

@@ -1,0 +1,31 @@
+%@+leo-ver=4-thin
+%@+node:gcross.20090730140239.1306:@thin SPFixedPhaseApproximation.tex
+%@@language latex
+\documentclass[twocolumn,showpacs,preprintnumbers,amsmath,amssymb,nofootinbib,pra,floatfix]{revtex4}
+
+\input{notes-prelude.in}
+
+\title{Single Particle Fixed Phase Approximation}
+
+\begin{document}
+
+Consider the fixed phase approximation, in which we assume that $\phi = \theta$ in cylindrical coordinates $(\rho,\theta,z)$.  Then observe that
+$$\begin{aligned}
+\phi &= \theta,\\
+\nabla \phi &= \frac{\hat\theta}{\rho},\\
+\Delta \phi &= 0,
+\end{aligned}
+$$ and so $$\exp{\hat T} = \paren{A+\frac{\hat\theta}{\rho}}^2 + \psi\Delta\psi - i\left\{\Div A + 2\psi\nabla\psi \cdot \paren{A+\frac{\hat\theta}{\rho}}\right\}.$$  
+
+
+\section{No magnetic field}
+In the absense of a magnetic field, this reduces to  $$\exp{\hat T} =\rho^{-2} + \psi\Delta\psi - \frac{2i}{\rho}\psi\pdrv{\psi}{\theta}.$$ Since the expectation must be real, it must be that $\psi \pdrv{\psi}{\theta}=0.$  This condition is happily satisfied for wave functions that are rotationally symmetric since then $\pdrv{\psi}{\theta}=0$, but it is not clear how it would be satisfied otherwise.  If there are multiple particles and one is using the Feynman phase approximation, then we must have that $$\psi \paren{\sum_i \frac{1}{\rho_i}\pdrv{\psi}{\theta_i}} = 0.$$
+
+\section{Constant magnetic field}
+
+Let $A=h\rho \hat\theta/2$, so that $B=\nabla\times A = h\hat z$.  Then
+$$\exp{\hat T} =  \paren{\frac{h}{2}\rho+\rho^{-1}}^2 + \psi\Delta\psi - i\left\{2\psi\pdrv{\psi}{\theta} \paren{\frac{h}{2}\rho + \rho^{-1}}\right\}.$$
+
+\end{document}
+%@-node:gcross.20090730140239.1306:@thin SPFixedPhaseApproximation.tex
+%@-leo
