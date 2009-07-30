@@ -51,6 +51,9 @@
 <v t="gcross.20090730150937.1287"><vh>SPFixedPhaseApproximation.dvi</vh>
 <v t="gcross.20090730140239.1306"><vh>@thin SPFixedPhaseApproximation.tex</vh></v>
 </v>
+<v t="gcross.20090730151355.1302" a="E"><vh>FancyFixedPhaseApproximation.dvi</vh>
+<v t="gcross.20090730151355.1303"><vh>@thin FancyFixedPhaseApproximation.tex</vh></v>
+</v>
 <v t="gcross.20090730150937.1289"><vh>MagneticFieldAnalogy.dvi</vh>
 <v t="gcross.20090730140239.1308"><vh>@thin MagneticFieldAnalogy.tex</vh></v>
 </v>
@@ -164,5 +167,6 @@ print laplacian
 <t tx="gcross.20090730151355.1296">g.os.system("kdvi " + pClicked.h + " &amp;")
 </t>
 <t tx="gcross.20090730151355.1299"></t>
+<t tx="gcross.20090730151355.1302"></t>
 </tnodes>
 </leo_file>

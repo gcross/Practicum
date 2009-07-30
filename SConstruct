@@ -21,6 +21,7 @@ env = Environment(
 for name in [
     "ExtraKineticTerms",
     "ExtraRotationTerms",
+    "FancyFixedPhaseApproximation",
     "SPFixedPhaseApproximation",
     "MagneticFieldAnalogy",
   ]:
