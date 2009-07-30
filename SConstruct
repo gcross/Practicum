@@ -6,7 +6,7 @@ import os
 
 #### Some configurations.
 
-DEFAULT_TARGET = 'pdf'
+DEFAULT_TARGET = 'dvi'
 
 #### Initialization
 
@@ -18,7 +18,12 @@ env = Environment(
 #### The actual builds.
 
 ## LaTeX DVI build:
-for name in ["ExtraKineticTerms","SPFixedPhaseApproximation"]:
+for name in [
+    "ExtraKineticTerms",
+    "ExtraRotationTerms",
+    "SPFixedPhaseApproximation",
+    "MagneticFieldAnalogy",
+  ]:
     dviOutput = env.DVI(source=name+'.tex', target=name+'.dvi')
     env.Alias('dvi', name+'.dvi')
 

@@ -3,24 +3,29 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
 <globals body_outline_ratio="0.5">
-	<global_window_position top="10" left="470" height="600" width="800"/>
+	<global_window_position top="0" left="173" height="668" width="1099"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
 <find_panel_settings/>
 <vnodes>
-<v t="gcross.20090728105516.1229" str_leo_pos="3"><vh>@chapters</vh></v>
+<v t="gcross.20090728105516.1229" str_leo_pos="4,4"><vh>@chapters</vh></v>
 <v t="gcross.20090728105516.1232"><vh>@ipy-startup</vh></v>
 <v t="gcross.20090728105516.1233"><vh>@settings</vh>
 <v t="gcross.20090728105516.1234"><vh>@string ipython_argv = ipython -pylab</vh></v>
+<v t="gcross.20090730140239.3752"><vh>nodeActions</vh>
+<v t="gcross.20090730140239.3753"><vh>*.pdf</vh></v>
+<v t="gcross.20090730151355.1296"><vh>*.dvi</vh></v>
+<v t="gcross.20090730150937.1290"><vh>@files SConstruct</vh></v>
+</v>
 </v>
 <v t="gcross.20090730140239.1300"><vh>Numerical analyses</vh>
 <v t="gcross.20090728105516.1228"><vh>Proof that phase form is invalid</vh>
-<v t="gcross.20090728110622.1243" a="E"><vh>via f</vh>
+<v t="gcross.20090728110622.1243"><vh>via f</vh>
 <v t="gcross.20090728110622.1241"><vh>f</vh></v>
 <v t="gcross.20090728110622.1244"><vh>test run</vh></v>
 </v>
-<v t="gcross.20090728110622.1242" a="E"><vh>via fprim</vh>
+<v t="gcross.20090728110622.1242"><vh>via fprim</vh>
 <v t="gcross.20090728105516.1230"><vh>f'</vh></v>
 <v t="gcross.20090728110622.1239"><vh>f'</vh></v>
 <v t="gcross.20090728110622.1240"><vh>test run</vh></v>
@@ -34,11 +39,21 @@
 <v t="gcross.20090729160450.1251"><vh>check</vh></v>
 </v>
 </v>
-<v t="gcross.20090730140239.1301"><vh>LaTeX Notes</vh>
+<v t="gcross.20090730140239.1301" a="E"><vh>LaTeX Notes</vh>
 <v t="gcross.20090730140239.1305"><vh>@thin SConstruct</vh></v>
 <v t="gcross.20090730140239.1304"><vh>@thin notes-prelude.in</vh></v>
+<v t="gcross.20090730140239.3756"><vh>ExtraKineticTerms.dvi</vh>
 <v t="gcross.20090730140239.1303"><vh>@thin ExtraKineticTerms.tex</vh></v>
+</v>
+<v t="gcross.20090730151355.1299"><vh>ExtraRotationTerms.dvi</vh>
+<v t="gcross.20090730151355.1298"><vh>@thin ExtraRotationTerms.tex</vh></v>
+</v>
+<v t="gcross.20090730150937.1287"><vh>SPFixedPhaseApproximation.dvi</vh>
 <v t="gcross.20090730140239.1306"><vh>@thin SPFixedPhaseApproximation.tex</vh></v>
+</v>
+<v t="gcross.20090730150937.1289"><vh>MagneticFieldAnalogy.dvi</vh>
+<v t="gcross.20090730140239.1308"><vh>@thin MagneticFieldAnalogy.tex</vh></v>
+</v>
 </v>
 </vnodes>
 <tnodes>
@@ -137,5 +152,17 @@ print laplacian
 </t>
 <t tx="gcross.20090730140239.1300"></t>
 <t tx="gcross.20090730140239.1301"></t>
+<t tx="gcross.20090730140239.3752"></t>
+<t tx="gcross.20090730140239.3753">g.os.system("kpdf " + pClicked.h + " &amp;")
+</t>
+<t tx="gcross.20090730140239.3756"></t>
+<t tx="gcross.20090730150937.1287"></t>
+<t tx="gcross.20090730150937.1289"></t>
+<t tx="gcross.20090730150937.1290">g.os.system("scons")
+
+</t>
+<t tx="gcross.20090730151355.1296">g.os.system("kdvi " + pClicked.h + " &amp;")
+</t>
+<t tx="gcross.20090730151355.1299"></t>
 </tnodes>
 </leo_file>
