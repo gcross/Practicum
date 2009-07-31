@@ -9,12 +9,46 @@
 
 \begin{document}
 
+We are working with a system in a rotating reference frame and no vector potential, so as has been computed in other notes we see that
+
 Consider the fixed phase form given by
-$$\atan\paren{\frac{\sum_{K\subseteq \{1\dots N\}\atop |K|=m} \sin\paren{\sum_{k\in K} \theta_k}}{\sum_{K\subseteq \{1\dots N\}\atop |K|=m} \cos\paren{\sum_{k\in K} \theta_k}}}.
+$$\atan\paren{\frac{\sum_{K\subseteq \{1\dots N\}\atop |K|=m} \sin\paren{\sum_{k\in K} \theta_k}}{\sum_{K\subseteq \{1\dots N\}\atop |K|=m} \cos\paren{\sum_{k\in K} \theta_k}}}\equiv\frac{S}{C},
 $$
-Recalling that the gradient in cylindrical coordinates is given by
+where
 $$
-\vec{\nabla} = \pdrv{}{\rho}\hat{\rho} + \frac{1}{\rho}\hat{\theta} + \pdrv{}{z}\hat{z}
+\begin{aligned}
+S&:=\sum_{K\subseteq \{1\dots N\}\atop |K|=m} s(K),\\
+C&:=\sum_{K\subseteq \{1\dots N\}\atop |K|=m} c(K),\\
+s(K)&:=\sin\paren{\sum_{k\in K} \theta_k},\\
+c(K)&:=\cos\paren{\sum_{k\in K} \theta_k}.\\
+\end{aligned}
+$$
+Let $\partial_i$ be a shorthand for differentiating by the $i$-th angle, i.e. $\partial_i:=\pdrv{}{\theta_i}$.  Observe that
+$$
+\begin{aligned}
+\partial_i \paren{\atan\frac{S}{C}} &= \frac{C(\partial_i S) - S(\partial_i C)}{C^2+S^2},\\
+\partial_i S&:=\sum_{{K\subseteq \{1\dots N\}\atop |K|=m}\atop i\in K} c(K),\\
+\partial_i C&:=\sum_{{K\subseteq \{1\dots N\}\atop |K|=m}\atop i\in K} -s(K),\\
+\end{aligned}
+$$
+and hence,
+$$
+\partial_i \paren{\atan\frac{S}{C}} = \frac{\big(\sum_K c(K)\big)\big(\sum_{K',i\in K'} c(K')\big)+\big(\sum_K s(K)\big)\big(\sum_{K',i\in K'} s(K)\big)}{\big(\sum_K c(K)\big)\big(\sum_{K'} c(K)\big)+\big(\sum_K s(K)\big)\big(\sum_{K'} s(K)\big)}
+$$
+
+Recalling the trigonometric identity,
+$$\cos\theta_i\cos\theta_j+\sin\theta_i\sin\theta_j,$$
+we observe that the above can be rewritten in the form,
+$$
+\begin{aligned}
+\partial_i \paren{\atan\frac{S}{C}}
+&= \frac{\sum_{K,K',i\in K'}\cos\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}}
+        {\sum_{K,K'}\cos\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}}\\
+&= \frac{\text{Re}\left[\sum_{K,K',i\in K'}e^{i\sum_{k\in K} \theta_k-i\sum_{k'\in K'} \theta_{k'}}\right]}
+        {\text{Re}\left[\sum_{K,K'}e^{i\sum_{k\in K} \theta_k-i\sum_{k'\in K'} \theta_{k'}}\right]}\\
+&= \frac{\text{Re}\left[\sum_{K,K',i\in K'}\prod_{\theta\in\{\theta_k|k\in K\}\cup\{-\theta_{k'}|k'\in K'\}} e^{i\theta}\right]}
+        {\text{Re}\left[\sum_{K,K'}\prod_{\theta\in\{\theta_k|k\in K\}\cup\{-\theta_{k'}|k'\in K'\}} e^{i\theta}\right]}\\
+\end{aligned}
 $$
 
 \end{document}
