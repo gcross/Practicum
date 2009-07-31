@@ -14,6 +14,7 @@
 <v t="gcross.20090731093156.1320"><vh>nodeActions</vh>
 <v t="gcross.20090731093156.1321"><vh>*.pdf</vh></v>
 <v t="gcross.20090731093156.1322"><vh>*.dvi</vh></v>
+<v t="gcross.20090731153600.1300"><vh>*.tex</vh></v>
 <v t="gcross.20090731093156.1323"><vh>@files SConstruct</vh></v>
 </v>
 <v t="gcross.20090730140239.1300"><vh>Numerical analyses</vh>
@@ -166,6 +167,8 @@ else:
 </t>
 <t tx="gcross.20090731093156.1323">g.os.system("scons")
 
+</t>
+<t tx="gcross.20090731153600.1300">g.os.system("pdflatex " + " ".join(pClicked.h.split()[1:]) + " &amp;")
 </t>
 </tnodes>
 </leo_file>
