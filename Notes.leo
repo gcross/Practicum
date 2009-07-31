@@ -42,19 +42,19 @@
 <v t="gcross.20090730140239.1301" a="E"><vh>LaTeX Notes</vh>
 <v t="gcross.20090730140239.1305"><vh>@thin SConstruct</vh></v>
 <v t="gcross.20090730140239.1304"><vh>@thin notes-prelude.in</vh></v>
-<v t="gcross.20090730140239.3756"><vh>ExtraKineticTerms.dvi</vh>
+<v t="gcross.20090730140239.3756"><vh>ExtraKineticTerms.pdf</vh>
 <v t="gcross.20090730140239.1303"><vh>@thin ExtraKineticTerms.tex</vh></v>
 </v>
-<v t="gcross.20090730151355.1299"><vh>ExtraRotationTerms.dvi</vh>
+<v t="gcross.20090730151355.1299"><vh>ExtraRotationTerms.pdf</vh>
 <v t="gcross.20090730151355.1298"><vh>@thin ExtraRotationTerms.tex</vh></v>
 </v>
-<v t="gcross.20090730150937.1287"><vh>SPFixedPhaseApproximation.dvi</vh>
+<v t="gcross.20090730150937.1287"><vh>SPFixedPhaseApproximation.pdf</vh>
 <v t="gcross.20090730140239.1306"><vh>@thin SPFixedPhaseApproximation.tex</vh></v>
 </v>
-<v t="gcross.20090730151355.1302" a="E"><vh>FancyFixedPhaseApproximation.dvi</vh>
+<v t="gcross.20090730151355.1302" a="E"><vh>FancyFixedPhaseApproximation.pdf</vh>
 <v t="gcross.20090730151355.1303"><vh>@thin FancyFixedPhaseApproximation.tex</vh></v>
 </v>
-<v t="gcross.20090730150937.1289"><vh>MagneticFieldAnalogy.dvi</vh>
+<v t="gcross.20090730150937.1289"><vh>MagneticFieldAnalogy.pdf</vh>
 <v t="gcross.20090730140239.1308"><vh>@thin MagneticFieldAnalogy.tex</vh></v>
 </v>
 </v>

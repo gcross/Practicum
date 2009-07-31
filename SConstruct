@@ -6,7 +6,7 @@ import os
 
 #### Some configurations.
 
-DEFAULT_TARGET = 'dvi'
+DEFAULT_TARGET = 'pdf'
 
 #### Initialization
 
