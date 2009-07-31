@@ -15,9 +15,12 @@ $$
 \coip{\Psi}{\hat T}{\Psi}
 &= \Psi^* \hat T \Psi, \\
 &= \Psi^* \left[-\Delta + A^2 - 2i(A\cdot \nabla) - i(\Div A)\right] \Psi, \\
-&= \paren{A+\nabla \phi}^2 + \psi\Delta \psi - i\left\{\Delta \phi + \Div A + 2\psi\nabla\psi \cdot (A+\nabla\phi)\right\}
+&= \paren{A+\nabla \phi}^2\psi^2 + \psi\Delta \psi - i\left\{(\Delta \phi + \Div A)\psi^2 + 2\psi\nabla\psi \cdot (A+\nabla\phi)\right\}.
 \end{aligned}
 $$
+
+In the absense of a magnetic field, this form reduces to
+$$\coip{\Psi}{\hat T}{\Psi}= \paren{\vec\nabla \phi}^2\psi^2 + \psi\Delta \psi - i\left\{(\Delta \phi)\psi^2 + 2\psi\paren{\vec{\nabla}\psi \cdot \vec{\nabla}\phi}\right\}.$$
 
 \end{document}
 %@-node:gcross.20090730140239.1303:@thin ExtraKineticTerms.tex
