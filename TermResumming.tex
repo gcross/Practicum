@@ -87,6 +87,16 @@ $$
 =\tilde L \cdot \tilde M^{(1)}\cdot \tilde M^{(2)} \cdots \tilde M^{(m-1)}\cdot \tilde R
 $$
 
+As expressed above, this product takes $O(m\cdot (N-m)^2)$ time and $O(N-m)$ space.  While this is a great improvement over the original exponential sum, we can do stil better.  Observe that
+$$\paren{\tilde L\cdot \tilde M^{(l)}}_j
+= \sum_i L_i M^{(l)}_{ij}
+= \sum_i L_i \gamma_{i(j+1)} f(x_{j+l})
+= \underbrace{\paren{\sum_{i\le j} L_i }}_{=:S_j} f(x_{j+l})
+= S_j f(x_{j+l}),$$
+where observe that $S_j$ can equivalently be defined recursively by
+$$S_j := S_{j-1}+L_j,\quad S_1 = L_1.$$
+Thus we observe that computing $(\tilde L\cdot \tilde M^{(l)})_j$ for each value of $j$ takes $O(1)$ time assuming that we have kept around $S_j$ for the previous value of $j$, and so we conclude that the full vector $\tilde L\cdot \tilde M^{(l)}$ can be computed in $O(N-m)$ time, and hence the full sum can be computed in merely $O\paren{m(N-m)}$ time.
+
 \end{document}
 %@-node:gcross.20090803112359.1303:@thin TermResumming.tex
 %@-leo
