@@ -55,6 +55,9 @@
 <v t="gcross.20090730150937.1289"><vh>MagneticFieldAnalogy.pdf</vh>
 <v t="gcross.20090730140239.1308"><vh>@thin MagneticFieldAnalogy.tex</vh></v>
 </v>
+<v t="gcross.20090803112359.1301"><vh>TermResumming.pdf</vh>
+<v t="gcross.20090803112359.1303"><vh>@thin TermResumming.tex</vh></v>
+</v>
 </v>
 </vnodes>
 <tnodes>
@@ -170,5 +173,6 @@ else:
 </t>
 <t tx="gcross.20090731153600.1300">g.os.system("pdflatex " + " ".join(pClicked.h.split()[1:]) + " &amp;")
 </t>
+<t tx="gcross.20090803112359.1301"></t>
 </tnodes>
 </leo_file>

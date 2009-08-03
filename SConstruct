@@ -24,6 +24,7 @@ for name in [
     "FancyFixedPhaseApproximation",
     "SPFixedPhaseApproximation",
     "MagneticFieldAnalogy",
+    "TermResumming",
   ]:
     dviOutput = env.DVI(source=name+'.tex', target=name+'.dvi')
     env.Alias('dvi', name+'.dvi')

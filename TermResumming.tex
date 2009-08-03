@@ -1,0 +1,92 @@
+%@+leo-ver=4-thin
+%@+node:gcross.20090803112359.1303:@thin TermResumming.tex
+%@@language latex
+\documentclass[onecolumn,amsmath,amssymb,nofootinbib,floatfix]{revtex4}
+
+\input{notes-prelude.in}
+
+\title{Term Resumming}
+
+\begin{document}
+
+Suppose that we want to compute a sum of the form
+$$\sum_{K\subseteq \{1,\dots,N\}\atop |K|=m} \prod_{k\in K} f(x_k).$$
+At first glance, this might seem to need exponential time to compute.  However, we shall show that this sum can be reduced to a series of matrix multiplications.
+
+First observe that since $K$ is a set, there can be no duplicate values of $k$, and hence we can think of this sum as being over all monotonically strictly increasing sequences of integers ranging between $1$ and $N$;  put another way, this sum of products can be rewritten in the nested sum form
+$$\sum_{1 \le k_1 \le N} \sum_{k_1 < k_2 \le N} \dots \sum_{k_{m-1} < k_m \le N} \prod_{i=1}^m f(x_{k_i}).$$
+
+Note that the summation signs do not commute since the range of each summand is dependent on the previous summands.  To get around this, we define the following matrix
+$$\gamma_{ij}:=
+\begin{cases}
+1 & i < j \\
+0 & \text{othewise}
+\end{cases}
+$$
+
+With this, we can now write the expression above as
+$$
+\sum_{
+1\le k_1\le N \atop {
+1\le k_2\le N \atop {
+\vdots \atop {
+1\le k_m\le N
+}}}}
+\gamma_{k_1k_2}\gamma_{k_2k_3}\dots\gamma_{k_{m-1}m}
+\prod_{i=1}^m f(x_{k_i})
+$$
+Now define the vectors
+$$L_i := f(x_i), \quad R_i = 1,$$
+and the matrix
+$$M_{ij} = \gamma_{ij}f(x_j),$$
+and we see that the expression above can be written as
+$$
+\sum_{
+1\le k_1\le N \atop {
+1\le k_2\le N \atop {
+\vdots \atop {
+1\le k_m\le N
+}}}}
+L_{k_1}M_{k_1k_2}M_{k_2k_3}\dots M_{k_{m-1}k_m} R_{k_m} = L\cdot M \cdot M \cdots \cdot R
+$$
+
+We could stop now and declare victory, but there is a further optimization that can be performed to reduce the size of this sum.  Observe that no sequence $\{k_i\}_{1\le i\le m}$ can start with an integer greater than $N-m+1$ or else the end of the sequence (being of length $m$) would exceed $N$.  Thus, the values of $k_1$ that result in non-vanishing terms restricted to $1\le k_1\le N-m+1$.  By similar reasoning, we see that $2\le k_2 \le N-m+2$, etc., so that the sum above can equivalently be written as
+$$
+\sum_{
+1\le k_1\le N-m+1 \atop {
+2\le k_2\le N-m+2 \atop {
+\vdots \atop {
+m-1\le k_{m-1}\le N-1 \atop {
+m\le k_m\le N
+}}}}}
+L_{k_1}M_{k_1k_2}M_{k_2k_3}\dots M_{k_{m-1}k_m} R_{k_m}
+=\sum_{
+1\le k_1\le N-m+1 \atop {
+1\le k_2\le N-m+1 \atop {
+\vdots \atop {
+1\le k_{m-1}\le N-m+1 \atop {
+1\le k_m\le N-m+1
+}}}}}
+L_{k_1}M_{k_1(k_2+1)}M_{(k_2+1)(k_3+2)}\dots M_{(k_{m-1}+m-2)(k_m+m-1)} R_{k_m}
+$$
+
+If we define new vectors $\tilde L$ and $\tilde R$ to consist of the first $N-m+1$ elements of respectively $L$ and $R$ and matrices
+$$
+\tilde M^{l}_{ij} := M_{(i+(l-1))(j+l)}= \gamma_{i(j+1)}f(x_{j+l}),
+$$
+then we see that we can rewite the sum above in the form
+$$
+\sum_{
+1\le k_1\le N-m+1 \atop {
+1\le k_2\le N-m+1 \atop {
+\vdots \atop {
+1\le k_{m-1}\le N-m+1 \atop {
+1\le k_m\le N-m+1
+}}}}}
+\tilde L_{k_1}\tilde M^{(1)}_{k_1k_2}\tilde M^{(2)}_{k_2k_3}\dots \tilde M^{(m-1)}_{k_{m-1}k_m} \tilde R_{k_m}
+=\tilde L \cdot \tilde M^{(1)}\cdot \tilde M^{(2)} \cdots \tilde M^{(m-1)}\cdot \tilde R
+$$
+
+\end{document}
+%@-node:gcross.20090803112359.1303:@thin TermResumming.tex
+%@-leo
