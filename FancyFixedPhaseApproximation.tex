@@ -46,8 +46,8 @@ $$
         {\sum_{K,K'}\cos\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}}\\
 &= \frac{\text{Re}\left[\sum_{K,K',i\in K'}e^{i\sum_{k\in K} \theta_k-i\sum_{k'\in K'} \theta_{k'}}\right]}
         {\text{Re}\left[\sum_{K,K'}e^{i\sum_{k\in K} \theta_k-i\sum_{k'\in K'} \theta_{k'}}\right]}\\
-&= \frac{\text{Re}\left[\sum_{K,K',i\in K'}\prod_{\theta\in\{\theta_k|k\in K\}\cup\{-\theta_{k'}|k'\in K'\}} e^{i\theta}\right]}
-        {\text{Re}\left[\sum_{K,K'}\prod_{\theta\in\{\theta_k|k\in K\}\cup\{-\theta_{k'}|k'\in K'\}} e^{i\theta}\right]}\\
+&= \frac{\text{Re}\left[\paren{\sum_{K}\prod_{k\in K}e^{i\theta_k}}\paren{\sum_{K',i\in K'}\prod_{k'\in K'}e^{i\theta_{k'}}}^*\right]}
+        {\left|\sum_{K}\prod_{k\in K}e^{i\theta_k}\right|^2}\\
 \end{aligned}
 $$
 
