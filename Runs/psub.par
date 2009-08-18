@@ -1,0 +1,28 @@
+#PSUB -r crosstest
+#PSUB -eo
+#PSUB -o crosstest.out
+#PSUB -ro
+#PSUB -d 0
+#PSUB -tM 0:30
+#PSUB -ln 8
+#PSUB -b micphys
+#PSUB -c zeus
+#PSUB -x
+#PSUB # no more embedded options
+                                                                           
+#Dump out the JOBID
+set echo
+echo LCRM job id = $PSUB_JOBID
+
+#Change to working directory
+cd $PSUB_SUBDIR
+echo job id = $PSUB_JOBID  From $PWD >> ~/.psub-history
+touch $PSUB_JOBID
+
+cd /g/g13/gcross/Projects/Practicum/Runs
+
+srun -n 64 /g/g13/gcross/local/bin/python run.py 0.0 & 
+  
+
+wait
+exit
