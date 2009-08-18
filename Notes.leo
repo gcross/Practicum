@@ -3,7 +3,7 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
 <globals body_outline_ratio="0.5">
-	<global_window_position top="0" left="173" height="668" width="1099"/>
+	<global_window_position top="22" left="10" height="594" width="1421"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -42,6 +42,9 @@
 <v t="gcross.20090730140239.1304"><vh>@thin notes-prelude.in</vh></v>
 <v t="gcross.20090730140239.3756"><vh>ExtraKineticTerms.pdf</vh>
 <v t="gcross.20090730140239.1303"><vh>@thin ExtraKineticTerms.tex</vh></v>
+</v>
+<v t="gcross.20090817175122.1537"><vh>FixedPhase.pdf</vh>
+<v t="gcross.20090817175122.1538"><vh>@thin FixedPhase.tex</vh></v>
 </v>
 <v t="gcross.20090730151355.1299"><vh>ExtraRotationTerms.pdf</vh>
 <v t="gcross.20090730151355.1298"><vh>@thin ExtraRotationTerms.tex</vh></v>
@@ -174,5 +177,6 @@ else:
 <t tx="gcross.20090731153600.1300">g.os.system("pdflatex " + " ".join(pClicked.h.split()[1:]) + " &amp;")
 </t>
 <t tx="gcross.20090803112359.1301"></t>
+<t tx="gcross.20090817175122.1537"></t>
 </tnodes>
 </leo_file>

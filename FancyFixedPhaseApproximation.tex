@@ -42,12 +42,26 @@ we observe that the above can be rewritten in the form,
 $$
 \begin{aligned}
 \partial_i \paren{\atan\frac{S}{C}}
-&= \frac{\sum_{K,K',i\in K'}\cos\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}}
+&= \frac{\sum_{K,K',i\in K}\cos\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}}
         {\sum_{K,K'}\cos\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}}\\
-&= \frac{\text{Re}\left[\sum_{K,K',i\in K'}e^{i\sum_{k\in K} \theta_k-i\sum_{k'\in K'} \theta_{k'}}\right]}
+&= \frac{\text{Re}\left[\sum_{K,K',i\in K}e^{i\sum_{k\in K} \theta_k-i\sum_{k'\in K'} \theta_{k'}}\right]}
         {\text{Re}\left[\sum_{K,K'}e^{i\sum_{k\in K} \theta_k-i\sum_{k'\in K'} \theta_{k'}}\right]}\\
-&= \frac{\text{Re}\left[\paren{\sum_{K}\prod_{k\in K}e^{i\theta_k}}\paren{\sum_{K',i\in K'}\prod_{k'\in K'}e^{i\theta_{k'}}}^*\right]}
+&= \frac{\text{Re}\left[\paren{\sum_{K}\prod_{k\in K}e^{i\theta_k}}\paren{\sum_{K',i\in K}\prod_{k'\in K'}e^{i\theta_{k'}}}^*\right]}
         {\left|\sum_{K}\prod_{k\in K}e^{i\theta_k}\right|^2}\\
+\end{aligned}
+$$
+
+Unfortunately we aren't done yet;  we still need to be able to compute the second derivative.  To do this, we first observe that
+$$\partial_j \sum_{K,K',i\in K}\cos\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}} = \sum_{K,K',i\in K,j\in K'}\sin\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}} - \sum_{K,K',\{i,j\}\subseteq K}\sin\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}
+$$
+
+$$
+\begin{aligned}
+\partial_j \partial_i \paren{\atan\frac{S}{C}}
+&= \frac{\sum_{K,K',i\in K,j\in K'}\sin\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}} - \sum_{K,K',\{i,j\}\subseteq K}\sin\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}}{\left|\sum_{K}\prod_{k\in K}e^{i\theta_k}\right|^2}\\
+&\qquad+ \frac{\paren{\sum_{K,K',i\in K}\cos\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}}\paren{2\sum_{K,K',j\in K}\sin\paren{\sum_{k\in K} \theta_k - \sum_{k'\in K'} \theta_{k'}}}}{\left|\sum_{K}\prod_{k\in K}e^{i\theta_k}\right|^4}\\
+&= \frac{\text{Im}\left[\paren{\sum_{K,i\in K}\prod_{k\in K}e^{i\theta_k}}\paren{\sum_{K',j\in K'}\prod_{k'\in K'}e^{i\theta_{k'}}}^*\right]-\text{Im}\left[\paren{\sum_{K,\{i,j\}\subseteq K}\prod_{k\in K}e^{i\theta_k}}\paren{\sum_{K'}\prod_{k'\in K'}e^{i\theta_{k'}}}^*\right]}{\left|\sum_{K}\prod_{k\in K}e^{i\theta_k}\right|^2}\\
+&\qquad+ 2\frac{\text{Re}\left[\paren{\sum_{K,i\in K}\prod_{k\in K}e^{i\theta_k}}\paren{\sum_{K'}\prod_{k'\in K'}e^{i\theta_{k'}}}^*\right]\text{Im}\left[\paren{\sum_{K,j\in K}\prod_{k\in K}e^{i\theta_k}}\paren{\sum_{K'}\prod_{k'\in K'}e^{i\theta_{k'}}}^*\right]}{\left|\sum_{K}\prod_{k\in K}e^{i\theta_k}\right|^4}
 \end{aligned}
 $$
 

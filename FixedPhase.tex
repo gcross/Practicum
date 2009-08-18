@@ -1,0 +1,55 @@
+%@+leo-ver=4-thin
+%@+node:gcross.20090817175122.1538:@thin FixedPhase.tex
+%@@language latex
+\documentclass[onecolumn,amsmath,amssymb,nofootinbib,floatfix]{revtex4}
+
+\input{notes-prelude.in}
+
+\begin{document}
+
+Let the wave function be defined by $\Psi$ (implicitly a function of position), where $\Psi=e^{i\phi} \psi$, and $\psi=|\psi|$.  We wish to compute $\coip{\Psi}{\hat H}{\Psi} = \coip{\Psi}{\hat T+\hat V}{\Psi}.$  Since $V$ is diagonal with respect to the basis in which $\Psi$ is expressed, the only ``interesting'' stuff comes from the expectation of $\hat T:= \sum_k -\frac{\hbar^2}{2m}\vec{\nabla}^2_k$, where $\vec{\nabla}_k$ is understood to be the gradient operator with respect to the coordinates of the $k$-th particle.  Ergo, we have that
+$$
+\begin{aligned}
+\Psi^* \hat T \Psi
+&= -\frac{\hbar^2}{2m}\sum_k \Psi^*\left[\vnabla_k^2\right]\psi e^{i\phi},\\
+&= -\frac{\hbar^2}{2m}\sum_k \Psi^* \vnabla_k\cdot \left[(\vnabla_k \psi) e^{i\phi} + i(\vnabla_k \phi) \psi e^{i\phi}\right],\\
+&= -\frac{\hbar^2}{2m}\sum_k \Psi^* \left[(\vnabla_k^2 \psi) e^{i\phi} + 2 i(\vnabla_k \phi) \cdot(\vnabla\psi) e^{i\phi} + i(\vnabla_k\phi)\cdot(\vnabla_k\psi)e^{i\phi} - (\vnabla_k \phi)^2 \psi e^{i\phi}\right],\\
+&= \frac{\hbar^2}{2m}\sum_k \left[\paren{\vnabla \phi}^2\psi^2 - \psi\vnabla_k^2\psi - i\left\{(\vnabla_k^2 \phi)\psi^2 + 2(\vnabla_k\psi) \cdot (\vnabla_k \phi)\psi\right\}\right].
+\end{aligned}
+$$
+
+Assuming that $\phi$ can be expressed in cylindrical coordinates and depends only on $\theta$, we see that this gives us an effective potential term of the form,
+
+$$U_{eff} = \sum_i \frac{\hbar^2}{2m\rho_i^2}\paren{\pdrv{\phi}{\theta_i}}^2.$$
+
+The gradient of this effective potential with respect to particle $j$'s coordinates is given by,
+
+$$
+\begin{aligned}
+\vnabla_j U_{\text{eff}}
+&= \vnabla_j \sum_i \frac{\hbar^2}{2m\rho_i^2}\paren{\pdrv{\phi}{\theta_i}}^2, \\
+&= \frac{\hbar^2}{m} \sum_i \paren{\pdrv{}{\rho}\hat\rho_i + \frac{1}{\rho}\pdrv{}{\theta_i}\hat\theta_i} \frac{1}{2\rho_i^2} \paren{\pdrv{\phi}{\theta_i}}^2, \\
+&= \frac{\hbar^2}{m} \sum_i \left[-\frac{\hat\rho_i}{\rho_i^3} \paren{\pdrv{\phi}{\theta_i}}^2 + \frac{\hat\theta_i}{2\rho_i^3} \paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\paren{\pdrv{\phi}{\theta_i}}\right], \\
+&= \frac{\hbar^2}{m} \sum_i \left[-\hat\rho_i \paren{\pdrv{\phi}{\theta_i}} + \hat\theta_i\frac{1}{2} \paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right]\frac{1}{\rho_i^3}\paren{\pdrv{\phi}{\theta_i}}, \\
+&= \frac{\hbar^2}{m} \sum_i \left[-(-\hat x\sin\theta_i + \hat y\cos\theta_i)\paren{\pdrv{\phi}{\theta_i}} + (\hat x\cos\theta_i + \hat y\sin\theta_i)\frac{1}{2} \paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right]\frac{1}{\rho_i^3}\paren{\pdrv{\phi}{\theta_i}}, \\
+&= \frac{\hbar^2}{m} \sum_i \left[
+\hat x \left[\sin\theta_i\paren{\pdrv{\phi}{\theta_i}} + \cos\theta_i\paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right] +
+\hat y \left[-\cos\theta_i\paren{\pdrv{\phi}{\theta_i}} + \sin\theta_i\paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right]
+ \right]\frac{1}{\rho_i^3}\paren{\pdrv{\phi}{\theta_i}}, \\
+&= \frac{\hbar^2}{m} \sum_i \left[
+\hat x \left[S_i P_i + C_i Q_{ij}\right] +
+\hat y \left[-C_i P_i + S_i Q_{ij}\right]
+ \right]\frac{1}{\rho_i^3}P_i, \\
+\end{aligned}
+$$
+
+where
+
+$$S_i := \sin\theta_i, C_i = \cos\theta_i, P_i := \pdrv{\phi}{\theta_i},\,\,\text{and}\,\,Q_{ij} = \frac{\partial^2\phi}{\partial \theta_i \theta_j}.$$
+
+
+
+\end{document}
+
+%@-node:gcross.20090817175122.1538:@thin FixedPhase.tex
+%@-leo
