@@ -8,13 +8,13 @@
 \begin{document}
 
 Recall that the operator for angular momentum about the $z$-axis is given by,
-$$\textbf{L}_z = \hat{\textbf{z}}\cdot \vec{\textbf{L}} = -i\hat{\textbf{z}}\cdot (\vec{\textbf{r}}\times\vec{\nabla}).$$
+$$\textbf{L}_z = \hat{\textbf{z}}\cdot \vec{\textbf{L}} = -i\hbar\hat{\textbf{z}}\cdot (\vec{\textbf{r}}\times\vec{\nabla}).$$
 
 We are interested in working with a system in a rotating frame;  we can do this by subtracting a term from the Hamiltonian to obtain
 $$H_{rot} = H - \Omega \textbf{L}_z.$$
 
 Since we are working in the fixed phase approximation, we compute the effective Hamiltonian arising from this constraint:
-$$\coip{\Psi}{\Omega \textbf{L}_z}{\Psi} = \left[\hat{\textbf{z}}\cdot\vec{\textbf{r}}\times(\vec{\nabla}\phi)\right]-i\left[\hat{\textbf{z}}\cdot\vec{\textbf{r}}\times(\vec{\nabla}\psi)\right]$$
+$$\coip{\Psi}{\Omega \textbf{L}_z}{\Psi} = \hbar\left[\hat{\textbf{z}}\cdot\vec{\textbf{r}}\times(\vec{\nabla}\phi)\right]\psi^2-i\hbar\psi\left[\hat{\textbf{z}}\cdot\vec{\textbf{r}}\times(\vec{\nabla}\psi)\right]$$
 
 If we can assume that $\phi$ is cylindrically symmetric, then we can make a further simplification.  Recall that the gradient operator expressed in cylindrical coordinates is given by,
 $$\pdrv{}{\rho} + \frac{1}{\rho}\pdrv{}{\theta} + \pdrv{}{z}.$$
@@ -28,7 +28,7 @@ $$
 \end{aligned}
 $$
 and therefore
-$$\text{Re}\left[\coip{\Psi}{\Omega \textbf{L}_z}{\Psi}\right] = \Omega\pdrv{\phi}{\theta}.$$
+$$\text{Re}\left[\coip{\Psi}{\Omega \textbf{L}_z}{\Psi}\right] = \hbar \Omega\pdrv{\phi}{\theta}\psi^2.$$
 
 \end{document}
 %@-node:gcross.20090730151355.1298:@thin ExtraRotationTerms.tex

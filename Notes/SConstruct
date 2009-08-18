@@ -22,6 +22,7 @@ for name in [
     "ExtraKineticTerms",
     "ExtraRotationTerms",
     "FancyFixedPhaseApproximation",
+    "FixedPhase",
     "SPFixedPhaseApproximation",
     "MagneticFieldAnalogy",
     "TermResumming",
