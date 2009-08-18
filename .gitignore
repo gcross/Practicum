@@ -6,3 +6,5 @@ _region_*
 *.dvi
 *~
 .scons*
+*.dat
+*.out
