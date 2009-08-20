@@ -1,0 +1,77 @@
+#PSUB -r vpi
+#PSUB -eo
+#PSUB -o vpi.out
+#PSUB -ro
+#PSUB -d 0
+#PSUB -tM 0:20
+#PSUB -ln 16
+#PSUB -b micphys
+#PSUB -c atlas
+#PSUB -x
+#PSUB # no more embedded options
+                                                                           
+#Dump out the JOBID
+set echo
+echo LCRM job id = $PSUB_JOBID
+
+#Change to working directory
+cd $PSUB_SUBDIR
+echo job id = $PSUB_JOBID  From $PWD | tee| tee ~/.psub-history
+touch $PSUB_JOBID
+
+export PYTHONPATH=$PYTHONPATH:/g/g13/gcross/Projects/vpi/lib
+
+cd /g/g13/gcross/Projects/Practicum/Runs/energy-contours
+
+echo Now writing: data-5/run:0.4:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.4 | tee data-5/run:0.4:.dat
+echo Now writing: data-5/run:0.45:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.45 | tee data-5/run:0.45:.dat
+echo Now writing: data-5/run:0.5:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.5 | tee data-5/run:0.5:.dat
+echo Now writing: data-5/run:0.55:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.55 | tee data-5/run:0.55:.dat
+echo Now writing: data-5/run:0.6:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.6 | tee data-5/run:0.6:.dat
+echo Now writing: data-5/run:0.65:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.65 | tee data-5/run:0.65:.dat
+echo Now writing: data-5/run:0.7:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.7 | tee data-5/run:0.7:.dat
+echo Now writing: data-5/run:0.75:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.75 | tee data-5/run:0.75:.dat
+echo Now writing: data-5/run:0.8:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.8 | tee data-5/run:0.8:.dat
+echo Now writing: data-5/run:0.85:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.85 | tee data-5/run:0.85:.dat
+echo Now writing: data-5/run:0.9:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.9 | tee data-5/run:0.9:.dat
+echo Now writing: data-5/run:0.95:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 0.95 | tee data-5/run:0.95:.dat
+echo Now writing: data-5/run:1:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 5 1 | tee data-5/run:1:.dat
+echo Now writing: data-6/run:0.4:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.4 | tee data-6/run:0.4:.dat
+echo Now writing: data-6/run:0.45:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.45 | tee data-6/run:0.45:.dat
+echo Now writing: data-6/run:0.5:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.5 | tee data-6/run:0.5:.dat
+echo Now writing: data-6/run:0.55:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.55 | tee data-6/run:0.55:.dat
+echo Now writing: data-6/run:0.6:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.6 | tee data-6/run:0.6:.dat
+echo Now writing: data-6/run:0.65:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.65 | tee data-6/run:0.65:.dat
+echo Now writing: data-6/run:0.7:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.7 | tee data-6/run:0.7:.dat
+echo Now writing: data-6/run:0.75:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.75 | tee data-6/run:0.75:.dat
+echo Now writing: data-6/run:0.8:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.8 | tee data-6/run:0.8:.dat
+echo Now writing: data-6/run:0.85:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.85 | tee data-6/run:0.85:.dat
+echo Now writing: data-6/run:0.9:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.9 | tee data-6/run:0.9:.dat
+echo Now writing: data-6/run:0.95:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 0.95 | tee data-6/run:0.95:.dat
+echo Now writing: data-6/run:1:.dat
+srun -n 128 /g/g13/gcross/local/bin/python run.py 6 1 | tee data-6/run:1:.dat
