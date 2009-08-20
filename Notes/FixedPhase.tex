@@ -20,7 +20,7 @@ $$
 
 Assuming that $\phi$ can be expressed in cylindrical coordinates and depends only on $\theta$, we see that this gives us an effective potential term of the form,
 
-$$U_{eff} = \sum_i \frac{\hbar^2}{2m\rho_i^2}\paren{\pdrv{\phi}{\theta_i}}^2.$$
+$$U_{\text{eff}} = \sum_i \frac{\hbar^2}{2m\rho_i^2}\paren{\pdrv{\phi}{\theta_i}}^2.$$
 
 The gradient of this effective potential with respect to particle $j$'s coordinates is given by,
 
@@ -28,18 +28,18 @@ $$
 \begin{aligned}
 \vnabla_j U_{\text{eff}}
 &= \vnabla_j \sum_i \frac{\hbar^2}{2m\rho_i^2}\paren{\pdrv{\phi}{\theta_i}}^2, \\
-&= \frac{\hbar^2}{m} \sum_i \paren{\pdrv{}{\rho}\hat\rho_i + \frac{1}{\rho}\pdrv{}{\theta_i}\hat\theta_i} \frac{1}{2\rho_i^2} \paren{\pdrv{\phi}{\theta_i}}^2, \\
-&= \frac{\hbar^2}{m} \sum_i \left[-\frac{\hat\rho_i}{\rho_i^3} \paren{\pdrv{\phi}{\theta_i}}^2 + \frac{\hat\theta_i}{2\rho_i^3} \paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\paren{\pdrv{\phi}{\theta_i}}\right], \\
-&= \frac{\hbar^2}{m} \sum_i \left[-\hat\rho_i \paren{\pdrv{\phi}{\theta_i}} + \hat\theta_i\frac{1}{2} \paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right]\frac{1}{\rho_i^3}\paren{\pdrv{\phi}{\theta_i}}, \\
-&= \frac{\hbar^2}{m} \sum_i \left[-(-\hat x\sin\theta_i + \hat y\cos\theta_i)\paren{\pdrv{\phi}{\theta_i}} + (\hat x\cos\theta_i + \hat y\sin\theta_i)\frac{1}{2} \paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right]\frac{1}{\rho_i^3}\paren{\pdrv{\phi}{\theta_i}}, \\
+&= \frac{\hbar^2}{2m} \sum_i \paren{\pdrv{}{\rho_j}\hat\rho_j + \frac{1}{\rho_j}\pdrv{}{\theta_j}\hat\theta_j} \frac{1}{\rho_i^2} \paren{\pdrv{\phi}{\theta_i}}^2, \\
+&= \frac{\hbar^2}{m} \sum_i \left[-\frac{\delta_{ij} \hat\rho_j}{\rho_j\rho_i^2} \paren{\pdrv{\phi}{\theta_j}}^2 + \frac{\hat\theta_j}{\rho_j\rho_i^2} \paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\paren{\pdrv{\phi}{\theta_i}}\right], \\
+&= \frac{\hbar^2}{m} \sum_i \left[-\delta_{ij}\hat\rho_j \paren{\pdrv{\phi}{\theta_i}} + \hat\theta_j \paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right]\frac{1}{\rho_j\rho_i^2}\paren{\pdrv{\phi}{\theta_i}}, \\
+&= \frac{\hbar^2}{m} \sum_i \left[-\delta_{ij}(\hat x\cos\theta_j + \hat y\sin\theta_j)\paren{\pdrv{\phi}{\theta_i}} + (-\hat x\sin\theta_j + \hat y\cos\theta_j) \paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right]\frac{1}{\rho_j\rho_i^2}\paren{\pdrv{\phi}{\theta_i}}, \\
 &= \frac{\hbar^2}{m} \sum_i \left[
-\hat x \left[\sin\theta_i\paren{\pdrv{\phi}{\theta_i}} + \cos\theta_i\paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right] +
-\hat y \left[-\cos\theta_i\paren{\pdrv{\phi}{\theta_i}} + \sin\theta_i\paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right]
- \right]\frac{1}{\rho_i^3}\paren{\pdrv{\phi}{\theta_i}}, \\
+\hat x \left[-\delta_{ij}\cos\theta_j\paren{\pdrv{\phi}{\theta_i}} - \sin\theta_j\paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right] +
+\hat y \left[-\delta_{ij}\sin\theta_j\paren{\pdrv{\phi}{\theta_i}} + \cos\theta_j\paren{\frac{\partial^2\phi}{\partial \theta_i \theta_j}}\right]
+ \right]\frac{1}{\rho_j\rho_i^2}\paren{\pdrv{\phi}{\theta_i}}, \\
 &= \frac{\hbar^2}{m} \sum_i \left[
-\hat x \left[S_i P_i + C_i Q_{ij}\right] +
-\hat y \left[-C_i P_i + S_i Q_{ij}\right]
- \right]\frac{1}{\rho_i^3}P_i, \\
+\hat x \left[-\delta_{ij} C_j P_i - S_j Q_{ij}\right] +
+\hat y \left[ \delta_{ij} S_j P_i + C_j Q_{ij}\right]
+ \right]\frac{1}{\rho_j\rho_i^2} P_i, \\
 \end{aligned}
 $$
 
