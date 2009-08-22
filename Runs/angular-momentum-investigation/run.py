@@ -31,7 +31,7 @@ configuration = {
     "rotation_plane_axis_2": 2,
     # Run parameters
     "total_number_of_observations": 100,
-    "number_of_prethermalization_steps": 100,
+    "number_of_prethermalization_steps": 1000,
     # Move parameters
     "dM": 22,
     "move_type_probabilities": [0.9,0.1,0],
@@ -90,17 +90,17 @@ for number_of_particles in [4]:
                             radial_densities_histogram_bin_count,
                             density_slice_subdirectory + "/radial-density"
                         ),
-                        EffectivePotentialEnergyEstimate(
+                        EffectivePotentialSliceEnergyEstimate(
                             slice_number,
                             "{my_directory}/{slice_name}/effective-potential".format(**vars()),
                             number_of_rotating_particles
                         ),
-                        PhysicalPotentialEnergyEstimate(
+                        PhysicalPotentialSliceEnergyEstimate(
                             slice_number,
                             "{my_directory}/{slice_name}/physical-potential".format(**vars()),
                             number_of_rotating_particles
                         ),
-                        TotalPotentialEnergyEstimate(
+                        TotalPotentialSliceEnergyEstimate(
                             slice_number,
                             "{my_directory}/{slice_name}/total-potential".format(**vars()),
                             number_of_rotating_particles
@@ -108,7 +108,12 @@ for number_of_particles in [4]:
                     ]:
                     system.add_observable(observable)
 
-            system.add_observable(TotalEnergyEstimate("{my_directory}/total-energy".format(**vars()),number_of_rotating_particles))
+            for observable in  [
+                TotalEnergyEstimate("{my_directory}/total-energy".format(**vars()),number_of_rotating_particles),
+                EffectivePotentialPathEnergyEstimates("{my_directory}/{number_of_rotating_particles}/effective-potential-along-path".format(**vars())),
+                PhysicalPotentialPathEnergyEstimates("{my_directory}/{number_of_rotating_particles}/physical-potential-along-path".format(**vars())),
+                TotalPotentialPathEnergyEstimates("{my_directory}/{number_of_rotating_particles}/total-potential-along-path".format(**vars())),
+                ]: system.add_observable(observable)
             #@-node:gcross.20090821174249.1355:<< Initialize observables >>
             #@nl
             system.run()

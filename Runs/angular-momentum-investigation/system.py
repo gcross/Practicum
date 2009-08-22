@@ -160,6 +160,7 @@ class TotalEnergyEstimate(Observable):
     #@-node:gcross.20090821174249.1336:write_out_totals
     #@-others
 #@-node:gcross.20090821174249.1330:class TotalEnergyEstimate
+#@+node:gcross.20090822161521.1373:Slice estimates
 #@+node:gcross.20090821174249.1335:class SliceEnergyEstimate
 class SliceEnergyEstimate(Observable):
     #@    @+others
@@ -188,8 +189,8 @@ class SliceEnergyEstimate(Observable):
     #@-node:gcross.20090821174249.1345:write_out_totals
     #@-others
 #@-node:gcross.20090821174249.1335:class SliceEnergyEstimate
-#@+node:gcross.20090821174249.1346:class EffectivePotentialEnergyEstimate
-class EffectivePotentialEnergyEstimate(SliceEnergyEstimate):
+#@+node:gcross.20090821174249.1346:class EffectivePotentialSliceEnergyEstimate
+class EffectivePotentialSliceEnergyEstimate(SliceEnergyEstimate):
     #@    @+others
     #@+node:gcross.20090821174249.1347:update
     def update(self):
@@ -205,25 +206,90 @@ class EffectivePotentialEnergyEstimate(SliceEnergyEstimate):
         self.estimate += sum(U)
     #@-node:gcross.20090821174249.1347:update
     #@-others
-#@-node:gcross.20090821174249.1346:class EffectivePotentialEnergyEstimate
-#@+node:gcross.20090821174249.1350:class PhysicalPotentialEnergyEstimate
-class PhysicalPotentialEnergyEstimate(SliceEnergyEstimate):
+#@-node:gcross.20090821174249.1346:class EffectivePotentialSliceEnergyEstimate
+#@+node:gcross.20090821174249.1350:class PhysicalPotentialSliceEnergyEstimate
+class PhysicalPotentialSliceEnergyEstimate(SliceEnergyEstimate):
     #@    @+others
     #@+node:gcross.20090821174249.1351:update
     def update(self):
         self.estimate += sum(dot(self.system.x[self.slice_number]**2,self.system.harmonic_oscillator_coefficients))/2.0
     #@-node:gcross.20090821174249.1351:update
     #@-others
-#@-node:gcross.20090821174249.1350:class PhysicalPotentialEnergyEstimate
-#@+node:gcross.20090821174249.1352:class TotalPotentialEnergyEstimate
-class TotalPotentialEnergyEstimate(SliceEnergyEstimate):
+#@-node:gcross.20090821174249.1350:class PhysicalPotentialSliceEnergyEstimate
+#@+node:gcross.20090821174249.1352:class TotalPotentialSliceEnergyEstimate
+class TotalPotentialSliceEnergyEstimate(SliceEnergyEstimate):
     #@    @+others
     #@+node:gcross.20090821174249.1354:update
     def update(self):
         self.estimate += sum(self.system.U[self.slice_number])
     #@-node:gcross.20090821174249.1354:update
     #@-others
-#@-node:gcross.20090821174249.1352:class TotalPotentialEnergyEstimate
+#@-node:gcross.20090821174249.1352:class TotalPotentialSliceEnergyEstimate
+#@-node:gcross.20090822161521.1373:Slice estimates
+#@+node:gcross.20090822161521.1356:Path estimates
+#@+node:gcross.20090822161521.1362:class PathEnergyEstimates
+class PathEnergyEstimates(Observable):
+    #@    @+others
+    #@+node:gcross.20090822161521.1363:(fields)
+    estimates = 0
+    #@-node:gcross.20090822161521.1363:(fields)
+    #@+node:gcross.20090822161521.1364:__init__
+    def __init__(self,filename):
+        self.filename = filename
+    #@-node:gcross.20090822161521.1364:__init__
+    #@+node:gcross.20090822161521.1365:compute_total
+    def compute_total(self):
+        total_estimates = zeros(self.estimates.shape,dtype='d',order='Fortran')
+        comm.Reduce((self.estimates,MPI.DOUBLE),(total_estimates,MPI.DOUBLE))
+        return total_estimates / self.system.total_number_of_observations
+    #@-node:gcross.20090822161521.1365:compute_total
+    #@+node:gcross.20090822161521.1366:write_out_totals
+    def write_out_totals(self,total_estimates):
+        ensure_path_to_file_exists(self.filename)
+        center_slice_number = self.system.center_slice_number
+        with open(self.filename,"w") as f:
+            for slice_number, estimate in enumerate(total_estimates):
+                print >> f, center_slice_number-abs(center_slice_number-slice_number), estimate, slice_number
+    #@-node:gcross.20090822161521.1366:write_out_totals
+    #@-others
+#@-node:gcross.20090822161521.1362:class PathEnergyEstimates
+#@+node:gcross.20090822161521.1367:class EffectivePotentialPathEnergyEstimates
+class EffectivePotentialPathEnergyEstimates(PathEnergyEstimates):
+    #@    @+others
+    #@+node:gcross.20090822161521.1368:update
+    def update(self):
+        system = self.system
+        U = zeros((system.number_of_slices,system.number_of_particles),dtype=double,order='Fortran')
+        gradU = zeros((system.number_of_slices,system.number_of_particles,system.number_of_dimensions),dtype=double,order='Fortran')
+        vpi.angular_momentum.compute_effective_rotational_potential(
+            system.x,system.lambda_,
+            system.rotation_plane_axis_1,system.rotation_plane_axis_2,
+            system.frame_angular_velocity,system.number_of_rotating_particles,
+            U, gradU
+        )
+        self.estimates += sum(U,axis=-1)
+    #@-node:gcross.20090822161521.1368:update
+    #@-others
+#@-node:gcross.20090822161521.1367:class EffectivePotentialPathEnergyEstimates
+#@+node:gcross.20090822161521.1369:class PhysicalPotentialPathEnergyEstimates
+class PhysicalPotentialPathEnergyEstimates(PathEnergyEstimates):
+    #@    @+others
+    #@+node:gcross.20090822161521.1370:update
+    def update(self):
+        self.estimates += sum(dot(self.system.x**2,self.system.harmonic_oscillator_coefficients),axis=-1)/2.0
+    #@-node:gcross.20090822161521.1370:update
+    #@-others
+#@-node:gcross.20090822161521.1369:class PhysicalPotentialPathEnergyEstimates
+#@+node:gcross.20090822161521.1371:class TotalPotentialPathEnergyEstimates
+class TotalPotentialPathEnergyEstimates(PathEnergyEstimates):
+    #@    @+others
+    #@+node:gcross.20090822161521.1372:update
+    def update(self):
+        self.estimates += sum(self.system.U,axis=-1)
+    #@-node:gcross.20090822161521.1372:update
+    #@-others
+#@-node:gcross.20090822161521.1371:class TotalPotentialPathEnergyEstimates
+#@-node:gcross.20090822161521.1356:Path estimates
 #@-node:gcross.20090821174249.1328:Energy estimates
 #@-others
 #@-node:gcross.20090821120721.1310:Observable classes
