@@ -65,6 +65,21 @@ $$
 \end{aligned}
 $$
 
+Now suppose that there is only one rotating particle.  In this case, we have that
+
+$$
+\begin{aligned}
+\partial_i \paren{\atan\frac{S}{C}} &= \frac{\sum_{k}\cos\paren{\theta_i - \theta_k}}
+                                            {\sum_{k,k'}\cos\paren{\theta_k - \theta_{k'}}}\\
+\partial_j\partial_i \paren{\atan\frac{S}{C}} &=
+\frac{-\delta_{ij}\sum_k\sin\paren{\theta_i - \theta_k} + \sin\paren{\theta_i - \theta_j}}{\sum_{k,k'}\cos\paren{\theta_k - \theta_{k'}}}
++\frac{\left[\sum_{k}\cos\paren{\theta_i - \theta_k}\right]\left[2\sum_{k}\sin\paren{\theta_j - \theta_k}\right]}{\left[\sum_{k,k'}\cos\paren{\theta_k - \theta_{k'}}\right]^2}\\
+\partial_j\partial_i \paren{\atan\frac{S}{C}} &=
+\frac{-\delta_{ij}\text{Im}\left[e^{i\theta_i}\paren{\sum_k e^{i\theta_k}}^*\right] + \text{Im}\left[e^{i\theta_i}e^{-i\theta_j}\right]}{\left|\sum_k e^{i\theta_k}\right|^2}
++2\frac{\text{Re}\left[e^{i\theta_i}\paren{\sum_k e^{i\theta_k}}^*\right]\text{Im}\left[e^{i\theta_j}\paren{\sum_k e^{i\theta_k}}^*\right]}{\left|\sum_k e^{i\theta_k}\right|^4}\\
+\end{aligned}
+$$
+
 \end{document}
 %@-node:gcross.20090730151355.1303:@thin FancyFixedPhaseApproximation.tex
 %@-leo

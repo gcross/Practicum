@@ -9,7 +9,7 @@
 <preferences/>
 <find_panel_settings/>
 <vnodes>
-<v t="gcross.20090728105516.1229" str_leo_pos="4"><vh>@chapters</vh></v>
+<v t="gcross.20090728105516.1229" str_leo_pos="4,6,0"><vh>@chapters</vh></v>
 <v t="gcross.20090728105516.1232"><vh>@ipy-startup</vh></v>
 <v t="gcross.20090731093156.1320"><vh>nodeActions</vh>
 <v t="gcross.20090731093156.1321"><vh>*.pdf</vh></v>
@@ -37,7 +37,7 @@
 <v t="gcross.20090729160450.1251"><vh>check</vh></v>
 </v>
 </v>
-<v t="gcross.20090730140239.1301"><vh>LaTeX Notes</vh>
+<v t="gcross.20090730140239.1301" a="E"><vh>LaTeX Notes</vh>
 <v t="gcross.20090730140239.1305"><vh>@thin SConstruct</vh></v>
 <v t="gcross.20090730140239.1304"><vh>@thin notes-prelude.in</vh></v>
 <v t="gcross.20090730140239.3756"><vh>ExtraKineticTerms.pdf</vh>
@@ -52,7 +52,7 @@
 <v t="gcross.20090730150937.1287"><vh>SPFixedPhaseApproximation.pdf</vh>
 <v t="gcross.20090730140239.1306"><vh>@thin SPFixedPhaseApproximation.tex</vh></v>
 </v>
-<v t="gcross.20090730151355.1302"><vh>FancyFixedPhaseApproximation.pdf</vh>
+<v t="gcross.20090730151355.1302" a="E"><vh>FancyFixedPhaseApproximation.pdf</vh>
 <v t="gcross.20090730151355.1303"><vh>@thin FancyFixedPhaseApproximation.tex</vh></v>
 </v>
 <v t="gcross.20090730150937.1289"><vh>MagneticFieldAnalogy.pdf</vh>
