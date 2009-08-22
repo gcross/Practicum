@@ -8,3 +8,5 @@ _region_*
 .scons*
 *.dat
 *.out
+*.pyc
+data*
