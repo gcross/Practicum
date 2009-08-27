@@ -1,0 +1,26 @@
+#PSUB -r vpi
+#PSUB -eo
+#PSUB -o vpi.out
+#PSUB -ro
+#PSUB -d 0
+#PSUB -tM 2:00
+#PSUB -ln 128
+#PSUB -b micphys
+#PSUB -c atlas
+#PSUB -x
+#PSUB # no more embedded options
+                                                                           
+#Dump out the JOBID
+set echo
+echo LCRM job id = $PSUB_JOBID
+
+#Change to working directory
+cd $PSUB_SUBDIR
+echo job id = $PSUB_JOBID  From $PWD | tee| tee ~/.psub-history
+touch $PSUB_JOBID
+
+export PYTHONPATH=$PYTHONPATH:/g/g13/gcross/Projects/vpi/lib
+
+cd /g/g13/gcross/Projects/Practicum/Runs/angular-momentum-investigation
+
+srun -n 1024 /g/g13/gcross/local/bin/python run.py data

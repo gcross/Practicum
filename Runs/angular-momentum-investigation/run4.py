@@ -1,7 +1,7 @@
 #@+leo-ver=4-thin
-#@+node:gcross.20090821120721.1289:@thin run.py
+#@+node:gcross.20090826111206.1425:@thin run4.py
 #@<< Imports >>
-#@+node:gcross.20090821174249.1359:<< Imports >>
+#@+node:gcross.20090826111206.1426:<< Imports >>
 import gc
 
 import sys
@@ -16,11 +16,11 @@ except ImportError:
 from system import *
 
 import itertools
-#@-node:gcross.20090821174249.1359:<< Imports >>
+#@-node:gcross.20090826111206.1426:<< Imports >>
 #@nl
 
 #@<< System Configuration >>
-#@+node:gcross.20090821120721.1293:<< System Configuration >>
+#@+node:gcross.20090826111206.1427:<< System Configuration >>
 configuration = {
     # System parameters
     "number_of_slices": 102,
@@ -30,7 +30,7 @@ configuration = {
     "rotation_plane_axis_1": 1,
     "rotation_plane_axis_2": 2,
     # Run parameters
-    "total_number_of_observations": 1000000,
+    "total_number_of_observations": 100000,
     "number_of_prethermalization_steps": 1000,
     # Move parameters
     "dM": 22,
@@ -43,26 +43,28 @@ configuration = {
     # Miscellaneous
     "use_4th_order_green_function": False,
 }
-#@-node:gcross.20090821120721.1293:<< System Configuration >>
+#@-node:gcross.20090826111206.1427:<< System Configuration >>
 #@nl
 #@<< Histogram Configuration >>
-#@+node:gcross.20090821174249.1356:<< Histogram Configuration >>
+#@+node:gcross.20090826111206.1428:<< Histogram Configuration >>
 _1d_densities_histogram_left  = [-2,-2,-2]
 _1d_densities_histogram_right = [+2,+2,+2]
 _1d_densities_histogram_bin_count = 51
 
 radial_densities_histogram_maximum_radius = 2.5
 radial_densities_histogram_bin_count = 51
-#@-node:gcross.20090821174249.1356:<< Histogram Configuration >>
+
+angular_densities_histogram_bin_count = 50
+#@-node:gcross.20090826111206.1428:<< Histogram Configuration >>
 #@nl
 
 output_root_directory = sys.argv[1]
 
-for number_of_particles in range(4,10):
-    for frame_angular_velocity in [0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1]:
+for number_of_particles in [6]:
+    for frame_angular_velocity in [0.4]:
         for number_of_rotating_particles in xrange(number_of_particles+1):
             #@            << Run simulation for given parameters >>
-            #@+node:gcross.20090821174249.1360:<< Run simulation for given parameters >>
+            #@+node:gcross.20090826111206.1429:<< Run simulation for given parameters >>
             my_directory = "{output_root_directory}/{number_of_particles}/{frame_angular_velocity}".format(**vars()) 
             if (my_rank == 0):
                 print
@@ -73,22 +75,27 @@ for number_of_particles in range(4,10):
 
             system = System(**configuration)
             #@<< Initialize observables >>
-            #@+node:gcross.20090821174249.1355:<< Initialize observables >>
-            for slice_name, slice_number in [("left",0),("center",system.center_slice_number),("right",-1)]:
+            #@+node:gcross.20090826111206.1430:<< Initialize observables >>
+            for slice_name, slice_number in [("center",system.center_slice_number)]:
                 density_slice_subdirectory = "{my_directory}/{number_of_rotating_particles}/{slice_name}".format(**vars())
                 for observable in [
-                        PositionDensity1DHistogram(
-                            slice_number,
-                            _1d_densities_histogram_left,
-                            _1d_densities_histogram_right,
-                            _1d_densities_histogram_bin_count,
-                            [density_slice_subdirectory + "/1d-densities/" + label for label in ["x","y","z","w"][:system.number_of_dimensions]]
-                        ),
-                        RadialDensityHistogram(
+                        PlaneRadialDensityHistogram(
                             slice_number,
                             radial_densities_histogram_maximum_radius,
                             radial_densities_histogram_bin_count,
-                            density_slice_subdirectory + "/radial-density"
+                            density_slice_subdirectory + "/plane-radial-density"
+                        ),
+                        AngularVelocityHistogram(
+                            slice_number,
+                            0,1,
+                            50,
+                            density_slice_subdirectory + "/angular-velocities"
+                        ),
+                        RecipricalPlaneRadiusSquaredDensityHistogram(
+                            slice_number,
+                            15,
+                            600,
+                            density_slice_subdirectory + "/plane-radial-density"
                         ),
                         EffectivePotentialSliceEnergyEstimate(
                             slice_number,
@@ -105,23 +112,43 @@ for number_of_particles in range(4,10):
                             "{my_directory}/{slice_name}/total-potential".format(**vars()),
                             number_of_rotating_particles
                         ),
+                        AverageRadiusEstimate(
+                            slice_number,
+                            "{my_directory}/{slice_name}/average-radius".format(**vars()),
+                            number_of_rotating_particles
+                        ),
+                        StandardDeviationAngularVelocityEstimate(
+                            slice_number,
+                            "{my_directory}/{slice_name}/standard-deviation-angular-velocity".format(**vars()),
+                            number_of_rotating_particles
+                        ),
+                        AveragePlaneRadiusEstimate(
+                            1,2,
+                            slice_number,
+                            "{my_directory}/{slice_name}/average-plane-radius".format(**vars()),
+                            number_of_rotating_particles
+                        ),
+                        AverageRecipricalPlaneRadiusSquaredEstimate(
+                            1,2,
+                            slice_number,
+                            "{my_directory}/{slice_name}/average-plane-reciprical-radius-squared".format(**vars()),
+                            number_of_rotating_particles
+                        ),
+
                     ]:
                     system.add_observable(observable)
 
             for observable in  [
                 TotalEnergyEstimate("{my_directory}/total-energy".format(**vars()),number_of_rotating_particles),
-                EffectivePotentialPathEnergyEstimates("{my_directory}/{number_of_rotating_particles}/effective-potential-along-path".format(**vars())),
-                PhysicalPotentialPathEnergyEstimates("{my_directory}/{number_of_rotating_particles}/physical-potential-along-path".format(**vars())),
-                TotalPotentialPathEnergyEstimates("{my_directory}/{number_of_rotating_particles}/total-potential-along-path".format(**vars())),
                 ]: system.add_observable(observable)
-            #@-node:gcross.20090821174249.1355:<< Initialize observables >>
+            #@-node:gcross.20090826111206.1430:<< Initialize observables >>
             #@nl
             system.run()
             system.total_and_write_observables()
             del system.observables
             del system
             gc.collect()
-            #@-node:gcross.20090821174249.1360:<< Run simulation for given parameters >>
+            #@-node:gcross.20090826111206.1429:<< Run simulation for given parameters >>
             #@nl
-#@-node:gcross.20090821120721.1289:@thin run.py
+#@-node:gcross.20090826111206.1425:@thin run4.py
 #@-leo
