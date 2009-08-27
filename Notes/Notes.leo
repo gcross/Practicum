@@ -3,13 +3,13 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
 <globals body_outline_ratio="0.5">
-	<global_window_position top="22" left="10" height="594" width="1421"/>
+	<global_window_position top="0" left="1" height="564" width="1270"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
 <find_panel_settings/>
 <vnodes>
-<v t="gcross.20090728105516.1229" str_leo_pos="4,6,0"><vh>@chapters</vh></v>
+<v t="gcross.20090728105516.1229" str_leo_pos="4"><vh>@chapters</vh></v>
 <v t="gcross.20090728105516.1232"><vh>@ipy-startup</vh></v>
 <v t="gcross.20090731093156.1320"><vh>nodeActions</vh>
 <v t="gcross.20090731093156.1321"><vh>*.pdf</vh></v>
@@ -37,7 +37,7 @@
 <v t="gcross.20090729160450.1251"><vh>check</vh></v>
 </v>
 </v>
-<v t="gcross.20090730140239.1301" a="E"><vh>LaTeX Notes</vh>
+<v t="gcross.20090730140239.1301"><vh>LaTeX Notes</vh>
 <v t="gcross.20090730140239.1305"><vh>@thin SConstruct</vh></v>
 <v t="gcross.20090730140239.1304"><vh>@thin notes-prelude.in</vh></v>
 <v t="gcross.20090730140239.3756"><vh>ExtraKineticTerms.pdf</vh>
@@ -52,7 +52,7 @@
 <v t="gcross.20090730150937.1287"><vh>SPFixedPhaseApproximation.pdf</vh>
 <v t="gcross.20090730140239.1306"><vh>@thin SPFixedPhaseApproximation.tex</vh></v>
 </v>
-<v t="gcross.20090730151355.1302" a="E"><vh>FancyFixedPhaseApproximation.pdf</vh>
+<v t="gcross.20090730151355.1302"><vh>FancyFixedPhaseApproximation.pdf</vh>
 <v t="gcross.20090730151355.1303"><vh>@thin FancyFixedPhaseApproximation.tex</vh></v>
 </v>
 <v t="gcross.20090730150937.1289"><vh>MagneticFieldAnalogy.pdf</vh>
@@ -60,6 +60,9 @@
 </v>
 <v t="gcross.20090803112359.1301"><vh>TermResumming.pdf</vh>
 <v t="gcross.20090803112359.1303"><vh>@thin TermResumming.tex</vh></v>
+</v>
+<v t="gcross.20090827093130.1303"><vh>ImaginaryPart.pdf</vh>
+<v t="gcross.20090827093130.1304"><vh>@thin ImaginaryPart.tex</vh></v>
 </v>
 </v>
 </vnodes>
@@ -178,5 +181,6 @@ else:
 </t>
 <t tx="gcross.20090803112359.1301"></t>
 <t tx="gcross.20090817175122.1537"></t>
+<t tx="gcross.20090827093130.1303"></t>
 </tnodes>
 </leo_file>
