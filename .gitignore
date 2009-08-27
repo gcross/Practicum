@@ -9,4 +9,4 @@ _region_*
 *.dat
 *.out
 *.pyc
-data*
+*data*
