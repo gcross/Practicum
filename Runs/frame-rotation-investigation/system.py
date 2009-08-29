@@ -30,93 +30,112 @@ my_rank = comm.Get_rank()
 #@nl
 
 #@+others
-#@+node:gcross.20090827130017.1617:Observable classes
+#@+node:gcross.20090827130017.1895:Observable classes
 #@+others
-#@+node:gcross.20090827130017.1762:Base classes
-#@+node:gcross.20090827130017.1618:class Observable
+#@+node:gcross.20090827130017.1896:Base classes
+#@+node:gcross.20090827130017.1897:class Observable
 class Observable(object):
     #@    @+others
-    #@+node:gcross.20090827130017.1619:total_and_write
+    #@+node:gcross.20090827130017.2016:total_and_write
     def total_and_write(self):
         totals = self.compute_total()
         if my_rank == 0:
             self.write_out_totals(totals)
-    #@-node:gcross.20090827130017.1619:total_and_write
+    #@-node:gcross.20090827130017.2016:total_and_write
     #@-others
-#@-node:gcross.20090827130017.1618:class Observable
-#@+node:gcross.20090827130017.1620:class AverageValuesEstimate
+#@-node:gcross.20090827130017.1897:class Observable
+#@+node:gcross.20090827130017.1899:class AverageValuesEstimate
 class AverageValuesEstimate(Observable):
     #@    @+others
-    #@+node:gcross.20090827130017.1621:compute_total
+    #@+node:gcross.20090828095451.2961:(fields)
+    total_number_of_observations = 0
+    #@-node:gcross.20090828095451.2961:(fields)
+    #@+node:gcross.20090827130017.2017:__init__
+    def __init__(self,*shape):
+        self.estimate = zeros(shape,dtype=double)
+        self.estimate_squared = zeros(shape,dtype=double)
+    #@-node:gcross.20090827130017.2017:__init__
+    #@+node:gcross.20090827130017.1898:total_and_write
+    def write_out_totals(self,totals_and_errors):
+        totals, totals_squared = totals_and_errors
+        errors = sqrt((totals_squared-totals**2)/self.total_number_of_observations)
+        self.write_out(totals,errors)
+    #@-node:gcross.20090827130017.1898:total_and_write
+    #@+node:gcross.20090827130017.1900:compute_total
     def compute_total(self):
-        total_estimate = zeros(self.estimate.shape,dtype='d',order='Fortran')
-        comm.Reduce((self.estimate,MPI.DOUBLE),(total_estimate,MPI.DOUBLE))
-        total_estimate /= self.system.total_number_of_observations
-        return total_estimate
-    #@-node:gcross.20090827130017.1621:compute_total
+        total_estimate_and_square = zeros(2*prod(self.estimate.shape),dtype='d',order='Fortran')
+        comm.Reduce((array([self.estimate,self.estimate_squared]).ravel(),MPI.DOUBLE),(total_estimate_and_square,MPI.DOUBLE))
+        total_estimate_and_square /= self.total_number_of_observations
+        return total_estimate_and_square.reshape((2,)+self.estimate.shape)
+    #@-node:gcross.20090827130017.1900:compute_total
+    #@+node:gcross.20090827130017.2014:add
+    def add(self,estimate):
+        self.total_number_of_observations += 1
+        self.estimate += estimate
+        self.estimate_squared += estimate**2
+    #@-node:gcross.20090827130017.2014:add
     #@-others
-#@-node:gcross.20090827130017.1620:class AverageValuesEstimate
-#@+node:gcross.20090827130017.1622:class SingleAverageValueEstimate
+#@-node:gcross.20090827130017.1899:class AverageValuesEstimate
+#@+node:gcross.20090827130017.1901:class SingleAverageValueEstimate
 class SingleAverageValueEstimate(AverageValuesEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1623:__init__
+    #@+node:gcross.20090827130017.1902:__init__
     def __init__(self):
-        self.estimate = zeros((1,),dtype=double)
-    #@-node:gcross.20090827130017.1623:__init__
+        AverageValuesEstimate.__init__(self,1)
+    #@-node:gcross.20090827130017.1902:__init__
     #@-others
-#@-node:gcross.20090827130017.1622:class SingleAverageValueEstimate
-#@+node:gcross.20090827130017.1624:class EstimatesAppendedToFile
+#@-node:gcross.20090827130017.1901:class SingleAverageValueEstimate
+#@+node:gcross.20090827130017.1903:class EstimatesAppendedToFile
 class EstimatesAppendedToFile(Observable):
     #@    @+others
-    #@+node:gcross.20090827130017.1625:__init__
+    #@+node:gcross.20090827130017.1904:__init__
     def __init__(self,filename,label):
         self.filename = filename
         self.label = label
-    #@-node:gcross.20090827130017.1625:__init__
-    #@+node:gcross.20090827130017.1626:write_out_totals
-    def write_out_totals(self,total_estimate):
+    #@-node:gcross.20090827130017.1904:__init__
+    #@+node:gcross.20090827130017.1905:write_out
+    def write_out(self,total_estimate,total_estimate_error):
         ensure_path_to_file_exists(self.filename)
         with open(self.filename,"a") as f:
             print >> f, self.label,
-            for value in total_estimate:
-                print >> f, value,
+            for value, error in izip(total_estimate,total_estimate_error):
+                print >> f, value, error
             print >> f
-
-    #@-node:gcross.20090827130017.1626:write_out_totals
+    #@-node:gcross.20090827130017.1905:write_out
     #@-others
-#@-node:gcross.20090827130017.1624:class EstimatesAppendedToFile
-#@+node:gcross.20090827130017.1627:class SingleAverageValueEstimateAppendedToFile
+#@-node:gcross.20090827130017.1903:class EstimatesAppendedToFile
+#@+node:gcross.20090827130017.1906:class SingleAverageValueEstimateAppendedToFile
 class SingleAverageValueEstimateAppendedToFile(SingleAverageValueEstimate,EstimatesAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1628:__init__
+    #@+node:gcross.20090827130017.1907:__init__
     def __init__(self,filename,label):
         SingleAverageValueEstimate.__init__(self)
         EstimatesAppendedToFile.__init__(self,filename,label)
-    #@-node:gcross.20090827130017.1628:__init__
+    #@-node:gcross.20090827130017.1907:__init__
     #@-others
-#@-node:gcross.20090827130017.1627:class SingleAverageValueEstimateAppendedToFile
-#@+node:gcross.20090827130017.1629:class SingleAverageValueAtSliceEstimateAppendedToFile
+#@-node:gcross.20090827130017.1906:class SingleAverageValueEstimateAppendedToFile
+#@+node:gcross.20090827130017.1908:class SingleAverageValueAtSliceEstimateAppendedToFile
 class SingleAverageValueAtSliceEstimateAppendedToFile(SingleAverageValueEstimateAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1630:__init__
+    #@+node:gcross.20090827130017.1909:__init__
     def __init__(self,slice_number,label,filename):
         SingleAverageValueEstimateAppendedToFile.__init__(self,label,filename)
         self.slice_number = slice_number
-    #@-node:gcross.20090827130017.1630:__init__
+    #@-node:gcross.20090827130017.1909:__init__
     #@-others
-#@-node:gcross.20090827130017.1629:class SingleAverageValueAtSliceEstimateAppendedToFile
-#@-node:gcross.20090827130017.1762:Base classes
-#@+node:gcross.20090827130017.1631:Histograms
-#@+node:gcross.20090827130017.1632:class Histogram
+#@-node:gcross.20090827130017.1908:class SingleAverageValueAtSliceEstimateAppendedToFile
+#@-node:gcross.20090827130017.1896:Base classes
+#@+node:gcross.20090827130017.1910:Histograms
+#@+node:gcross.20090827130017.1911:class Histogram
 class Histogram(Observable):
     #@    @+others
-    #@+node:gcross.20090827130017.1633:compute_total
+    #@+node:gcross.20090827130017.1912:compute_total
     def compute_total(self):
         total_histogram = zeros(self.histogram.shape,dtype='i',order='Fortran')
         comm.Reduce((self.histogram,MPI.INT),(total_histogram,MPI.INT))
         return total_histogram
-    #@-node:gcross.20090827130017.1633:compute_total
-    #@+node:gcross.20090827130017.1634:write_out_totals
+    #@-node:gcross.20090827130017.1912:compute_total
+    #@+node:gcross.20090827130017.1913:write_out_totals
     def write_out_totals(self,histogram):
         ensure_path_to_file_exists(self.filename)
         total_counts = float(sum(histogram))
@@ -126,13 +145,13 @@ class Histogram(Observable):
             for count in histogram:
                 print >> f, "{0} {1}".format(current,count/total_counts)
                 current += bin_width
-    #@-node:gcross.20090827130017.1634:write_out_totals
+    #@-node:gcross.20090827130017.1913:write_out_totals
     #@-others
-#@-node:gcross.20090827130017.1632:class Histogram
-#@+node:gcross.20090827130017.1635:class PositionDensity1DHistogram
+#@-node:gcross.20090827130017.1911:class Histogram
+#@+node:gcross.20090827130017.1914:class PositionDensity1DHistogram
 class PositionDensity1DHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1636:__init__
+    #@+node:gcross.20090827130017.1915:__init__
     def __init__(self,slice_number,left,right,number_of_bins,filenames):
         assert len(left) == len(right)
         self.left = left
@@ -141,16 +160,16 @@ class PositionDensity1DHistogram(Histogram):
         self.slice_number = slice_number
         self.histogram = zeros((len(left),number_of_bins),dtype='i',order='Fortran')
         self.filenames = filenames
-    #@-node:gcross.20090827130017.1636:__init__
-    #@+node:gcross.20090827130017.1637:update
+    #@-node:gcross.20090827130017.1915:__init__
+    #@+node:gcross.20090827130017.1916:update
     def update(self):
         vpi.histograms.accumulate_1d_densities(
             self.system.x[self.slice_number],
             self.left,self.right,
             self.histogram
         )
-    #@-node:gcross.20090827130017.1637:update
-    #@+node:gcross.20090827130017.1638:write_out_totals
+    #@-node:gcross.20090827130017.1916:update
+    #@+node:gcross.20090827130017.1917:write_out_totals
     def write_out_totals(self,histograms):
         for filename, histogram, left, right in izip(self.filenames,histograms,self.left,self.right):
             ensure_path_to_file_exists(filename)
@@ -161,48 +180,48 @@ class PositionDensity1DHistogram(Histogram):
                 for count in histogram:
                     print >> f, "{0} {1}".format(current,count/total_counts)
                     current += bin_width
-    #@-node:gcross.20090827130017.1638:write_out_totals
+    #@-node:gcross.20090827130017.1917:write_out_totals
     #@-others
-#@-node:gcross.20090827130017.1635:class PositionDensity1DHistogram
-#@+node:gcross.20090827130017.1639:class RadialDensityHistogram
+#@-node:gcross.20090827130017.1914:class PositionDensity1DHistogram
+#@+node:gcross.20090827130017.1918:class RadialDensityHistogram
 class RadialDensityHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1640:(fields)
+    #@+node:gcross.20090827130017.1919:(fields)
     left = 0
-    #@-node:gcross.20090827130017.1640:(fields)
-    #@+node:gcross.20090827130017.1641:__init__
+    #@-node:gcross.20090827130017.1919:(fields)
+    #@+node:gcross.20090827130017.1920:__init__
     def __init__(self,slice_number,maximum_radius,number_of_bins,filename):
         self.right = self.maximum_radius = maximum_radius
         self.number_of_bins = number_of_bins
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1641:__init__
-    #@+node:gcross.20090827130017.1642:update
+    #@-node:gcross.20090827130017.1920:__init__
+    #@+node:gcross.20090827130017.1921:update
     def update(self):
         vpi.histograms.accumulate_radial_densities(
             self.system.x[self.slice_number],
             self.maximum_radius,
             self.histogram
         )
-    #@-node:gcross.20090827130017.1642:update
+    #@-node:gcross.20090827130017.1921:update
     #@-others
-#@-node:gcross.20090827130017.1639:class RadialDensityHistogram
-#@+node:gcross.20090827130017.1643:class PlaneRadialDensityHistogram
+#@-node:gcross.20090827130017.1918:class RadialDensityHistogram
+#@+node:gcross.20090827130017.1922:class PlaneRadialDensityHistogram
 class PlaneRadialDensityHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1644:(fields)
+    #@+node:gcross.20090827130017.1923:(fields)
     left = 0
-    #@-node:gcross.20090827130017.1644:(fields)
-    #@+node:gcross.20090827130017.1645:__init__
+    #@-node:gcross.20090827130017.1923:(fields)
+    #@+node:gcross.20090827130017.1924:__init__
     def __init__(self,slice_number,maximum_radius,number_of_bins,filename):
         self.right = self.maximum_radius = maximum_radius
         self.number_of_bins = number_of_bins
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1645:__init__
-    #@+node:gcross.20090827130017.1646:update
+    #@-node:gcross.20090827130017.1924:__init__
+    #@+node:gcross.20090827130017.1925:update
     def update(self):
         vpi.histograms.accumulate_plane_radial_densities(
             self.system.x[self.slice_number],
@@ -211,48 +230,48 @@ class PlaneRadialDensityHistogram(Histogram):
             self.system.rotation_plane_axis_2,
             self.histogram
         )
-    #@-node:gcross.20090827130017.1646:update
+    #@-node:gcross.20090827130017.1925:update
     #@-others
-#@-node:gcross.20090827130017.1643:class PlaneRadialDensityHistogram
-#@+node:gcross.20090827130017.1647:class RecipricalRadiusSquaredDensityHistogram
+#@-node:gcross.20090827130017.1922:class PlaneRadialDensityHistogram
+#@+node:gcross.20090827130017.1926:class RecipricalRadiusSquaredDensityHistogram
 class RecipricalRadiusSquaredDensityHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1648:(fields)
+    #@+node:gcross.20090827130017.1927:(fields)
     left = 0
-    #@-node:gcross.20090827130017.1648:(fields)
-    #@+node:gcross.20090827130017.1649:__init__
+    #@-node:gcross.20090827130017.1927:(fields)
+    #@+node:gcross.20090827130017.1928:__init__
     def __init__(self,slice_number,maximum_value,number_of_bins,filename):
         self.right = self.maximum_value = maximum_value
         self.number_of_bins = number_of_bins
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1649:__init__
-    #@+node:gcross.20090827130017.1650:update
+    #@-node:gcross.20090827130017.1928:__init__
+    #@+node:gcross.20090827130017.1929:update
     def update(self):
         vpi.histograms.accumulate_reciprical_radius_squared_densities(
             self.system.x[self.slice_number],
             self.maximum_value,
             self.histogram
         )
-    #@-node:gcross.20090827130017.1650:update
+    #@-node:gcross.20090827130017.1929:update
     #@-others
-#@-node:gcross.20090827130017.1647:class RecipricalRadiusSquaredDensityHistogram
-#@+node:gcross.20090827130017.1651:class RecipricalPlaneRadiusSquaredDensityHistogram
+#@-node:gcross.20090827130017.1926:class RecipricalRadiusSquaredDensityHistogram
+#@+node:gcross.20090827130017.1930:class RecipricalPlaneRadiusSquaredDensityHistogram
 class RecipricalPlaneRadiusSquaredDensityHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1652:(fields)
+    #@+node:gcross.20090827130017.1931:(fields)
     left = 0
-    #@-node:gcross.20090827130017.1652:(fields)
-    #@+node:gcross.20090827130017.1653:__init__
+    #@-node:gcross.20090827130017.1931:(fields)
+    #@+node:gcross.20090827130017.1932:__init__
     def __init__(self,slice_number,maximum_value,number_of_bins,filename):
         self.right = self.maximum_value = maximum_value
         self.number_of_bins = number_of_bins
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1653:__init__
-    #@+node:gcross.20090827130017.1654:update
+    #@-node:gcross.20090827130017.1932:__init__
+    #@+node:gcross.20090827130017.1933:update
     def update(self):
         vpi.histograms.accumulate_recip_plane_r_sq_densities(
             self.system.x[self.slice_number],
@@ -261,8 +280,8 @@ class RecipricalPlaneRadiusSquaredDensityHistogram(Histogram):
             self.system.rotation_plane_axis_2,
             self.histogram
         )
-    #@-node:gcross.20090827130017.1654:update
-    #@+node:gcross.20090827130017.1655:write_out_totals
+    #@-node:gcross.20090827130017.1933:update
+    #@+node:gcross.20090827130017.1934:write_out_totals
     def write_out_totals(self,histogram):
         ensure_path_to_file_exists(self.filename)
         with open(self.filename,"w") as f:
@@ -272,24 +291,24 @@ class RecipricalPlaneRadiusSquaredDensityHistogram(Histogram):
             for count in self.histogram:
                 print >> f, "{0} {1}".format(current,count/total_counts)
                 current += bin_width
-    #@-node:gcross.20090827130017.1655:write_out_totals
+    #@-node:gcross.20090827130017.1934:write_out_totals
     #@-others
-#@-node:gcross.20090827130017.1651:class RecipricalPlaneRadiusSquaredDensityHistogram
-#@+node:gcross.20090827130017.1656:class AngularSeparationDensityHistogram
+#@-node:gcross.20090827130017.1930:class RecipricalPlaneRadiusSquaredDensityHistogram
+#@+node:gcross.20090827130017.1935:class AngularSeparationDensityHistogram
 class AngularSeparationDensityHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1657:(fields)
+    #@+node:gcross.20090827130017.1936:(fields)
     left = 0
     right = 2*pi
-    #@-node:gcross.20090827130017.1657:(fields)
-    #@+node:gcross.20090827130017.1658:__init__
+    #@-node:gcross.20090827130017.1936:(fields)
+    #@+node:gcross.20090827130017.1937:__init__
     def __init__(self,slice_number,number_of_bins,filename):
         self.number_of_bins = number_of_bins
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1658:__init__
-    #@+node:gcross.20090827130017.1659:update
+    #@-node:gcross.20090827130017.1937:__init__
+    #@+node:gcross.20090827130017.1938:update
     def update(self):
         system = self.system
         x = system.x[self.slice_number]
@@ -298,8 +317,8 @@ class AngularSeparationDensityHistogram(Histogram):
             angles,
             self.histogram
         )
-    #@-node:gcross.20090827130017.1659:update
-    #@+node:gcross.20090827130017.1660:write_out_totals
+    #@-node:gcross.20090827130017.1938:update
+    #@+node:gcross.20090827130017.1939:write_out_totals
     def write_out_totals(self,histogram):
         ensure_path_to_file_exists(self.filename)
         with open(self.filename,"w") as f:
@@ -309,24 +328,24 @@ class AngularSeparationDensityHistogram(Histogram):
             for count in self.histogram:
                 print >> f, "{0} {1}".format(current,count/total_counts)
                 current += bin_width
-    #@-node:gcross.20090827130017.1660:write_out_totals
+    #@-node:gcross.20090827130017.1939:write_out_totals
     #@-others
-#@-node:gcross.20090827130017.1656:class AngularSeparationDensityHistogram
-#@+node:gcross.20090827130017.1661:class NeighborAngularSeparationDensityHistogram
+#@-node:gcross.20090827130017.1935:class AngularSeparationDensityHistogram
+#@+node:gcross.20090827130017.1940:class NeighborAngularSeparationDensityHistogram
 class NeighborAngularSeparationDensityHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1662:(fields)
+    #@+node:gcross.20090827130017.1941:(fields)
     left = 0
     right = 2*pi
-    #@-node:gcross.20090827130017.1662:(fields)
-    #@+node:gcross.20090827130017.1663:__init__
+    #@-node:gcross.20090827130017.1941:(fields)
+    #@+node:gcross.20090827130017.1942:__init__
     def __init__(self,slice_number,number_of_bins,filename):
         self.number_of_bins = number_of_bins
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1663:__init__
-    #@+node:gcross.20090827130017.1664:update
+    #@-node:gcross.20090827130017.1942:__init__
+    #@+node:gcross.20090827130017.1943:update
     def update(self):
         system = self.system
         x = system.x[self.slice_number]
@@ -335,13 +354,13 @@ class NeighborAngularSeparationDensityHistogram(Histogram):
             angles,
             self.histogram
         )
-    #@-node:gcross.20090827130017.1664:update
+    #@-node:gcross.20090827130017.1943:update
     #@-others
-#@-node:gcross.20090827130017.1661:class NeighborAngularSeparationDensityHistogram
-#@+node:gcross.20090827130017.1665:class AngularVelocityHistogram
+#@-node:gcross.20090827130017.1940:class NeighborAngularSeparationDensityHistogram
+#@+node:gcross.20090827130017.1944:class AngularVelocityHistogram
 class AngularVelocityHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1666:__init__
+    #@+node:gcross.20090827130017.1945:__init__
     def __init__(self,slice_number,left,right,number_of_bins,filename):
         self.left = left
         self.right = right
@@ -349,8 +368,8 @@ class AngularVelocityHistogram(Histogram):
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1666:__init__
-    #@+node:gcross.20090827130017.1667:update
+    #@-node:gcross.20090827130017.1945:__init__
+    #@+node:gcross.20090827130017.1946:update
     def update(self):
         system = self.system
         first_derivatives, _ = vpi.angular_momentum.compute_angular_derivatives(
@@ -359,13 +378,13 @@ class AngularVelocityHistogram(Histogram):
             system.number_of_rotating_particles
         )
         vpi.histograms.accumulate(first_derivatives,self.left,self.right,self.histogram)
-    #@-node:gcross.20090827130017.1667:update
+    #@-node:gcross.20090827130017.1946:update
     #@-others
-#@-node:gcross.20090827130017.1665:class AngularVelocityHistogram
-#@+node:gcross.20090827130017.1668:class AngularVelocitySquaredHistogram
+#@-node:gcross.20090827130017.1944:class AngularVelocityHistogram
+#@+node:gcross.20090827130017.1947:class AngularVelocitySquaredHistogram
 class AngularVelocitySquaredHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1669:__init__
+    #@+node:gcross.20090827130017.1948:__init__
     def __init__(self,slice_number,left,right,number_of_bins,filename):
         self.left = left
         self.right = right
@@ -373,8 +392,8 @@ class AngularVelocitySquaredHistogram(Histogram):
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1669:__init__
-    #@+node:gcross.20090827130017.1670:update
+    #@-node:gcross.20090827130017.1948:__init__
+    #@+node:gcross.20090827130017.1949:update
     def update(self):
         system = self.system
         first_derivatives, _ = vpi.angular_momentum.compute_angular_derivatives(
@@ -384,13 +403,13 @@ class AngularVelocitySquaredHistogram(Histogram):
         )
         first_derivatives **= 2
         vpi.histograms.accumulate(first_derivatives,self.left,self.right,self.histogram)
-    #@-node:gcross.20090827130017.1670:update
+    #@-node:gcross.20090827130017.1949:update
     #@-others
-#@-node:gcross.20090827130017.1668:class AngularVelocitySquaredHistogram
-#@+node:gcross.20090827130017.1671:class RotationQuadraticTermHistogram
+#@-node:gcross.20090827130017.1947:class AngularVelocitySquaredHistogram
+#@+node:gcross.20090827130017.1950:class RotationQuadraticTermHistogram
 class RotationQuadraticTermHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1672:__init__
+    #@+node:gcross.20090827130017.1951:__init__
     def __init__(self,slice_number,left,right,number_of_bins,filename):
         self.left = left
         self.right = right
@@ -398,8 +417,8 @@ class RotationQuadraticTermHistogram(Histogram):
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1672:__init__
-    #@+node:gcross.20090827130017.1673:update
+    #@-node:gcross.20090827130017.1951:__init__
+    #@+node:gcross.20090827130017.1952:update
     def update(self):
         system = self.system
         x = system.x[self.slice_number]
@@ -410,13 +429,13 @@ class RotationQuadraticTermHistogram(Histogram):
         )
         term = (first_derivatives ** 2) / (x[:,system.rotation_plane_axis_2-1]**2+x[:,system.rotation_plane_axis_1-1]**2)
         vpi.histograms.accumulate(term,self.left,self.right,self.histogram)
-    #@-node:gcross.20090827130017.1673:update
+    #@-node:gcross.20090827130017.1952:update
     #@-others
-#@-node:gcross.20090827130017.1671:class RotationQuadraticTermHistogram
-#@+node:gcross.20090827130017.1674:class AngularVelocityAndRadiusHistogram
+#@-node:gcross.20090827130017.1950:class RotationQuadraticTermHistogram
+#@+node:gcross.20090827130017.1953:class AngularVelocityAndRadiusHistogram
 class AngularVelocityAndRadiusHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090827130017.1675:__init__
+    #@+node:gcross.20090827130017.1954:__init__
     def __init__(self,slice_number,maximum_angular_velocity,maximum_radius,number_of_bins,filename):
         self.maximum_angular_velocity = maximum_angular_velocity
         self.maximum_radius = maximum_radius
@@ -424,8 +443,8 @@ class AngularVelocityAndRadiusHistogram(Histogram):
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,)*2,dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090827130017.1675:__init__
-    #@+node:gcross.20090827130017.1676:update
+    #@-node:gcross.20090827130017.1954:__init__
+    #@+node:gcross.20090827130017.1955:update
     def update(self):
         system = self.system
         x = system.x[self.slice_number]
@@ -441,8 +460,8 @@ class AngularVelocityAndRadiusHistogram(Histogram):
         for (i,j) in izip(i_values,j_values):
             if (i >= 0) and (i < self.number_of_bins) and (j >= 0) and (j < self.number_of_bins):
                 self.histogram[i,j] += 1
-    #@-node:gcross.20090827130017.1676:update
-    #@+node:gcross.20090827130017.1677:write_out_totals
+    #@-node:gcross.20090827130017.1955:update
+    #@+node:gcross.20090827130017.1956:write_out_totals
     def write_out_totals(self,histogram):
         ensure_path_to_file_exists(self.filename)
         total_counts = float(sum(histogram))
@@ -453,55 +472,44 @@ class AngularVelocityAndRadiusHistogram(Histogram):
                     radius = (j+0.5)/self.number_of_bins*self.maximum_radius
                     print >> f, "{0} {1} {2}".format(angular_velocity,radius,histogram[i,j]/total_counts)
                 print >> f, ""
-    #@-node:gcross.20090827130017.1677:write_out_totals
+    #@-node:gcross.20090827130017.1956:write_out_totals
     #@-others
-#@-node:gcross.20090827130017.1674:class AngularVelocityAndRadiusHistogram
-#@-node:gcross.20090827130017.1631:Histograms
-#@+node:gcross.20090827130017.1678:Energy estimates
-#@+node:gcross.20090827130017.1679:class TotalEnergyEstimate
-class TotalEnergyEstimate(AverageValuesEstimate):
+#@-node:gcross.20090827130017.1953:class AngularVelocityAndRadiusHistogram
+#@-node:gcross.20090827130017.1910:Histograms
+#@+node:gcross.20090827130017.1957:Energy estimates
+#@+node:gcross.20090827130017.1958:class TotalEnergyEstimate
+class TotalEnergyEstimate(SingleAverageValueEstimateAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1680:__init__
-    def __init__(self,filename,label):
-        self.filename = filename
-        self.label = label
-        self.estimate = zeros((2,),dtype=double)
-    #@-node:gcross.20090827130017.1680:__init__
-    #@+node:gcross.20090827130017.1681:update
+    #@+node:gcross.20090827130017.1960:update
     def update(self):
         system = self.system
-        for i, slice_number in enumerate([0,-1]):
-            gradient_of_log_trial_fn, laplacian_of_log_trial_fn = system.compute_trial_derivatives(system.x[i],system.xij2[i])
-            self.estimate[i] += \
+        for slice_number in [0,-1]:
+            gradient_of_log_trial_fn, laplacian_of_log_trial_fn = system.compute_trial_derivatives(system.x[slice_number],system.xij2[slice_number])
+            self.add(
                 vpi.observables.compute_local_energy_estimate(
                     system.U[slice_number],
                     gradient_of_log_trial_fn, laplacian_of_log_trial_fn,
                     system.lambda_,
                 )
-    #@-node:gcross.20090827130017.1681:update
-    #@+node:gcross.20090827130017.1682:write_out_totals
-    def write_out_totals(self,total_estimates):
-        ensure_path_to_file_exists(self.filename)
-        with open(self.filename,"a") as f:
-            print >> f, self.label, mean(total_estimates), std(total_estimates)
-    #@-node:gcross.20090827130017.1682:write_out_totals
+            )
+    #@-node:gcross.20090827130017.1960:update
     #@-others
-#@-node:gcross.20090827130017.1679:class TotalEnergyEstimate
-#@+node:gcross.20090827130017.1683:Slice estimates
-#@+node:gcross.20090827130017.1684:class SliceEnergyEstimate
+#@-node:gcross.20090827130017.1958:class TotalEnergyEstimate
+#@+node:gcross.20090827130017.1962:Slice estimates
+#@+node:gcross.20090827130017.1963:class SliceEnergyEstimate
 class SliceEnergyEstimate(SingleAverageValueEstimateAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1685:__init__
+    #@+node:gcross.20090827130017.1964:__init__
     def __init__(self,slice_number,filename,label):
         SingleAverageValueEstimateAppendedToFile.__init__(self,filename,label)
         self.slice_number = slice_number
-    #@-node:gcross.20090827130017.1685:__init__
+    #@-node:gcross.20090827130017.1964:__init__
     #@-others
-#@-node:gcross.20090827130017.1684:class SliceEnergyEstimate
-#@+node:gcross.20090827130017.1686:class EffectivePotentialSliceEnergyEstimate
+#@-node:gcross.20090827130017.1963:class SliceEnergyEstimate
+#@+node:gcross.20090827130017.1965:class EffectivePotentialSliceEnergyEstimate
 class EffectivePotentialSliceEnergyEstimate(SliceEnergyEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1687:update
+    #@+node:gcross.20090827130017.1966:update
     def update(self):
         system = self.system
         U = zeros((1,system.number_of_particles),dtype=double,order='Fortran')
@@ -512,54 +520,54 @@ class EffectivePotentialSliceEnergyEstimate(SliceEnergyEstimate):
             system.frame_angular_velocity,system.number_of_rotating_particles,
             U, gradU
         )
-        self.estimate += sum(U)
-    #@-node:gcross.20090827130017.1687:update
+        self.add(sum(U))
+    #@-node:gcross.20090827130017.1966:update
     #@-others
-#@-node:gcross.20090827130017.1686:class EffectivePotentialSliceEnergyEstimate
-#@+node:gcross.20090827130017.1688:class PhysicalPotentialSliceEnergyEstimate
+#@-node:gcross.20090827130017.1965:class EffectivePotentialSliceEnergyEstimate
+#@+node:gcross.20090827130017.1967:class PhysicalPotentialSliceEnergyEstimate
 class PhysicalPotentialSliceEnergyEstimate(SliceEnergyEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1689:update
+    #@+node:gcross.20090827130017.1968:update
     def update(self):
-        self.estimate += sum(dot(self.system.x[self.slice_number]**2,self.system.harmonic_oscillator_coefficients))/2.0
-    #@-node:gcross.20090827130017.1689:update
+        self.add(sum(dot(self.system.x[self.slice_number]**2,self.system.harmonic_oscillator_coefficients))/2.0)
+    #@-node:gcross.20090827130017.1968:update
     #@-others
-#@-node:gcross.20090827130017.1688:class PhysicalPotentialSliceEnergyEstimate
-#@+node:gcross.20090827130017.1690:class TotalPotentialSliceEnergyEstimate
+#@-node:gcross.20090827130017.1967:class PhysicalPotentialSliceEnergyEstimate
+#@+node:gcross.20090827130017.1969:class TotalPotentialSliceEnergyEstimate
 class TotalPotentialSliceEnergyEstimate(SliceEnergyEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1691:update
+    #@+node:gcross.20090827130017.1970:update
     def update(self):
-        self.estimate += sum(self.system.U[self.slice_number])
-    #@-node:gcross.20090827130017.1691:update
+        self.add(sum(self.system.U[self.slice_number]))
+    #@-node:gcross.20090827130017.1970:update
     #@-others
-#@-node:gcross.20090827130017.1690:class TotalPotentialSliceEnergyEstimate
-#@-node:gcross.20090827130017.1683:Slice estimates
-#@+node:gcross.20090827130017.1692:Path estimates
-#@+node:gcross.20090827130017.1693:class PathEnergyEstimates
+#@-node:gcross.20090827130017.1969:class TotalPotentialSliceEnergyEstimate
+#@-node:gcross.20090827130017.1962:Slice estimates
+#@+node:gcross.20090827130017.1971:Path estimates
+#@+node:gcross.20090827130017.1972:class PathEnergyEstimates
 class PathEnergyEstimates(AverageValuesEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1694:(fields)
+    #@+node:gcross.20090827130017.1973:(fields)
     estimates = 0
-    #@-node:gcross.20090827130017.1694:(fields)
-    #@+node:gcross.20090827130017.1695:__init__
+    #@-node:gcross.20090827130017.1973:(fields)
+    #@+node:gcross.20090827130017.1974:__init__
     def __init__(self,filename):
         self.filename = filename
-    #@-node:gcross.20090827130017.1695:__init__
-    #@+node:gcross.20090827130017.1696:write_out_totals
+    #@-node:gcross.20090827130017.1974:__init__
+    #@+node:gcross.20090827130017.1975:write_out_totals
     def write_out_totals(self,total_estimates):
         ensure_path_to_file_exists(self.filename)
         center_slice_number = self.system.center_slice_number
         with open(self.filename,"w") as f:
             for slice_number, estimate in enumerate(total_estimates):
                 print >> f, center_slice_number-abs(center_slice_number-slice_number), estimate, slice_number
-    #@-node:gcross.20090827130017.1696:write_out_totals
+    #@-node:gcross.20090827130017.1975:write_out_totals
     #@-others
-#@-node:gcross.20090827130017.1693:class PathEnergyEstimates
-#@+node:gcross.20090827130017.1697:class EffectivePotentialPathEnergyEstimates
+#@-node:gcross.20090827130017.1972:class PathEnergyEstimates
+#@+node:gcross.20090827130017.1976:class EffectivePotentialPathEnergyEstimates
 class EffectivePotentialPathEnergyEstimates(PathEnergyEstimates):
     #@    @+others
-    #@+node:gcross.20090827130017.1698:update
+    #@+node:gcross.20090827130017.1977:update
     def update(self):
         system = self.system
         U = zeros((system.number_of_slices,system.number_of_particles),dtype=double,order='Fortran')
@@ -571,75 +579,75 @@ class EffectivePotentialPathEnergyEstimates(PathEnergyEstimates):
             U, gradU
         )
         self.estimates += sum(U,axis=-1)
-    #@-node:gcross.20090827130017.1698:update
+    #@-node:gcross.20090827130017.1977:update
     #@-others
-#@-node:gcross.20090827130017.1697:class EffectivePotentialPathEnergyEstimates
-#@+node:gcross.20090827130017.1699:class PhysicalPotentialPathEnergyEstimates
+#@-node:gcross.20090827130017.1976:class EffectivePotentialPathEnergyEstimates
+#@+node:gcross.20090827130017.1978:class PhysicalPotentialPathEnergyEstimates
 class PhysicalPotentialPathEnergyEstimates(PathEnergyEstimates):
     #@    @+others
-    #@+node:gcross.20090827130017.1700:update
+    #@+node:gcross.20090827130017.1979:update
     def update(self):
         self.estimates += sum(dot(self.system.x**2,self.system.harmonic_oscillator_coefficients),axis=-1)/2.0
-    #@-node:gcross.20090827130017.1700:update
+    #@-node:gcross.20090827130017.1979:update
     #@-others
-#@-node:gcross.20090827130017.1699:class PhysicalPotentialPathEnergyEstimates
-#@+node:gcross.20090827130017.1701:class TotalPotentialPathEnergyEstimates
+#@-node:gcross.20090827130017.1978:class PhysicalPotentialPathEnergyEstimates
+#@+node:gcross.20090827130017.1980:class TotalPotentialPathEnergyEstimates
 class TotalPotentialPathEnergyEstimates(PathEnergyEstimates):
     #@    @+others
-    #@+node:gcross.20090827130017.1702:update
+    #@+node:gcross.20090827130017.1981:update
     def update(self):
         self.estimates += sum(self.system.U,axis=-1)
-    #@-node:gcross.20090827130017.1702:update
+    #@-node:gcross.20090827130017.1981:update
     #@-others
-#@-node:gcross.20090827130017.1701:class TotalPotentialPathEnergyEstimates
-#@-node:gcross.20090827130017.1692:Path estimates
-#@-node:gcross.20090827130017.1678:Energy estimates
-#@+node:gcross.20090827130017.1703:Position estimates
-#@+node:gcross.20090827130017.1704:class AveragePositionEstimate
+#@-node:gcross.20090827130017.1980:class TotalPotentialPathEnergyEstimates
+#@-node:gcross.20090827130017.1971:Path estimates
+#@-node:gcross.20090827130017.1957:Energy estimates
+#@+node:gcross.20090827130017.1982:Position estimates
+#@+node:gcross.20090827130017.1983:class AveragePositionEstimate
 class AveragePositionEstimate(SingleAverageValueAtSliceEstimateAppendedToFile):
     pass
-#@-node:gcross.20090827130017.1704:class AveragePositionEstimate
-#@+node:gcross.20090827130017.1705:class AverageAxialCoordinateEstimate
+#@-node:gcross.20090827130017.1983:class AveragePositionEstimate
+#@+node:gcross.20090827130017.1984:class AverageAxialCoordinateEstimate
 class AverageAxialCoordinateEstimate(AveragePositionEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1706:__init__
+    #@+node:gcross.20090827130017.1985:__init__
     def __init__(self,axis,slice_number,filename,label):
         AveragePositionEstimate.__init__(self,slice_number,filename,label)
         self.axis = axis
-    #@-node:gcross.20090827130017.1706:__init__
-    #@+node:gcross.20090827130017.1707:update
+    #@-node:gcross.20090827130017.1985:__init__
+    #@+node:gcross.20090827130017.1986:update
     def update(self):
-        self.estimate += average(self.system.x[self.slice_number,:,self.axis])
-    #@-node:gcross.20090827130017.1707:update
+        self.add(average(self.system.x[self.slice_number,:,self.axis]))
+    #@-node:gcross.20090827130017.1986:update
     #@-others
-#@-node:gcross.20090827130017.1705:class AverageAxialCoordinateEstimate
-#@+node:gcross.20090827130017.1708:class AverageAxialDistanceEstimate
+#@-node:gcross.20090827130017.1984:class AverageAxialCoordinateEstimate
+#@+node:gcross.20090827130017.1987:class AverageAxialDistanceEstimate
 class AverageAxialDistanceEstimate(AveragePositionEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1709:__init__
+    #@+node:gcross.20090827130017.1988:__init__
     def __init__(self,axis,slice_number,filename,label):
         AveragePositionEstimate.__init__(self,slice_number,filename,label)
         self.axis = axis
-    #@-node:gcross.20090827130017.1709:__init__
-    #@+node:gcross.20090827130017.1710:update
+    #@-node:gcross.20090827130017.1988:__init__
+    #@+node:gcross.20090827130017.1989:update
     def update(self):
-        self.estimate += average(abs(self.system.x[self.slice_number,:,self.axis]))
-    #@-node:gcross.20090827130017.1710:update
+        self.add(average(abs(self.system.x[self.slice_number,:,self.axis])))
+    #@-node:gcross.20090827130017.1989:update
     #@-others
-#@-node:gcross.20090827130017.1708:class AverageAxialDistanceEstimate
-#@+node:gcross.20090827130017.1711:class AverageRadiusEstimate
+#@-node:gcross.20090827130017.1987:class AverageAxialDistanceEstimate
+#@+node:gcross.20090827130017.1990:class AverageRadiusEstimate
 class AverageRadiusEstimate(AveragePositionEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1712:update
+    #@+node:gcross.20090827130017.1991:update
     def update(self):
-        self.estimate += vpi.observables.compute_radius_average(self.system.x[self.slice_number])
-    #@-node:gcross.20090827130017.1712:update
+        self.add(vpi.observables.compute_radius_average(self.system.x[self.slice_number]))
+    #@-node:gcross.20090827130017.1991:update
     #@-others
-#@-node:gcross.20090827130017.1711:class AverageRadiusEstimate
-#@+node:gcross.20090827130017.1713:class AveragePlaneRadiusEstimate
+#@-node:gcross.20090827130017.1990:class AverageRadiusEstimate
+#@+node:gcross.20090827130017.1992:class AveragePlaneRadiusEstimate
 class AveragePlaneRadiusEstimate(AveragePositionEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1714:__init__
+    #@+node:gcross.20090827130017.1993:__init__
     def __init__(self,plane_axis_1,plane_axis_2,slice_number,filename,label):
         AveragePositionEstimate.__init__(self,slice_number,filename,label)
         assert plane_axis_1 >= 1
@@ -647,17 +655,17 @@ class AveragePlaneRadiusEstimate(AveragePositionEstimate):
         assert not (plane_axis_1 == plane_axis_2)
         self.plane_axis_1 = plane_axis_1
         self.plane_axis_2 = plane_axis_2
-    #@-node:gcross.20090827130017.1714:__init__
-    #@+node:gcross.20090827130017.1715:update
+    #@-node:gcross.20090827130017.1993:__init__
+    #@+node:gcross.20090827130017.1994:update
     def update(self):
-        self.estimate += vpi.observables.compute_plane_radius_average(self.system.x[self.slice_number],self.plane_axis_1,self.plane_axis_2)
-    #@-node:gcross.20090827130017.1715:update
+        self.add( vpi.observables.compute_plane_radius_average(self.system.x[self.slice_number],self.plane_axis_1,self.plane_axis_2))
+    #@-node:gcross.20090827130017.1994:update
     #@-others
-#@-node:gcross.20090827130017.1713:class AveragePlaneRadiusEstimate
-#@+node:gcross.20090827130017.1716:class AverageRecipricalPlaneRadiusSquaredEstimate
+#@-node:gcross.20090827130017.1992:class AveragePlaneRadiusEstimate
+#@+node:gcross.20090827130017.1995:class AverageRecipricalPlaneRadiusSquaredEstimate
 class AverageRecipricalPlaneRadiusSquaredEstimate(AveragePositionEstimate):
     #@    @+others
-    #@+node:gcross.20090827130017.1717:__init__
+    #@+node:gcross.20090827130017.1996:__init__
     def __init__(self,plane_axis_1,plane_axis_2,slice_number,filename,label):
         AveragePositionEstimate.__init__(self,slice_number,filename,label)
         assert plane_axis_1 >= 1
@@ -665,19 +673,19 @@ class AverageRecipricalPlaneRadiusSquaredEstimate(AveragePositionEstimate):
         assert not (plane_axis_1 == plane_axis_2)
         self.plane_axis_1 = plane_axis_1
         self.plane_axis_2 = plane_axis_2
-    #@-node:gcross.20090827130017.1717:__init__
-    #@+node:gcross.20090827130017.1718:update
+    #@-node:gcross.20090827130017.1996:__init__
+    #@+node:gcross.20090827130017.1997:update
     def update(self):
-        self.estimate += vpi.observables.compute_recip_plane_r_sq_average(self.system.x,self.plane_axis_1,self.plane_axis_2)
-    #@-node:gcross.20090827130017.1718:update
+        self.add(vpi.observables.compute_recip_plane_r_sq_average(self.system.x,self.plane_axis_1,self.plane_axis_2))
+    #@-node:gcross.20090827130017.1997:update
     #@-others
-#@-node:gcross.20090827130017.1716:class AverageRecipricalPlaneRadiusSquaredEstimate
-#@-node:gcross.20090827130017.1703:Position estimates
-#@+node:gcross.20090827130017.1761:Rotation related estimates
-#@+node:gcross.20090827130017.1719:class AverageAngularVelocityEstimate
+#@-node:gcross.20090827130017.1995:class AverageRecipricalPlaneRadiusSquaredEstimate
+#@-node:gcross.20090827130017.1982:Position estimates
+#@+node:gcross.20090827130017.1998:Rotation related estimates
+#@+node:gcross.20090827130017.1999:class AverageAngularVelocityEstimate
 class AverageAngularVelocityEstimate(SingleAverageValueAtSliceEstimateAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1720:update
+    #@+node:gcross.20090827130017.2000:update
     def update(self):
         system = self.system
         first_derivatives, _ = vpi.angular_momentum.compute_angular_derivatives(
@@ -685,14 +693,14 @@ class AverageAngularVelocityEstimate(SingleAverageValueAtSliceEstimateAppendedTo
             system.rotation_plane_axis_1, system.rotation_plane_axis_2,
             system.number_of_rotating_particles
         )
-        self.estimate += average(first_derivatives)
-    #@-node:gcross.20090827130017.1720:update
+        self.add(average(first_derivatives))
+    #@-node:gcross.20090827130017.2000:update
     #@-others
-#@-node:gcross.20090827130017.1719:class AverageAngularVelocityEstimate
-#@+node:gcross.20090827130017.1721:class AverageAngularVelocitySquaredEstimate
+#@-node:gcross.20090827130017.1999:class AverageAngularVelocityEstimate
+#@+node:gcross.20090827130017.2001:class AverageAngularVelocitySquaredEstimate
 class AverageAngularVelocitySquaredEstimate(SingleAverageValueAtSliceEstimateAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1722:update
+    #@+node:gcross.20090827130017.2002:update
     def update(self):
         system = self.system
         first_derivatives, _ = vpi.angular_momentum.compute_angular_derivatives(
@@ -701,14 +709,14 @@ class AverageAngularVelocitySquaredEstimate(SingleAverageValueAtSliceEstimateApp
             system.number_of_rotating_particles
         )
         first_derivatives **= 2
-        self.estimate += average(first_derivatives)
-    #@-node:gcross.20090827130017.1722:update
+        self.add(average(first_derivatives))
+    #@-node:gcross.20090827130017.2002:update
     #@-others
-#@-node:gcross.20090827130017.1721:class AverageAngularVelocitySquaredEstimate
-#@+node:gcross.20090827130017.1723:class AverageRotationQuadraticTermEstimate
+#@-node:gcross.20090827130017.2001:class AverageAngularVelocitySquaredEstimate
+#@+node:gcross.20090827130017.2003:class AverageRotationQuadraticTermEstimate
 class AverageAngularVelocitySquaredEstimate(SingleAverageValueAtSliceEstimateAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1724:update
+    #@+node:gcross.20090827130017.2004:update
     def update(self):
         system = self.system
         first_derivatives, _ = vpi.angular_momentum.compute_angular_derivatives(
@@ -717,58 +725,38 @@ class AverageAngularVelocitySquaredEstimate(SingleAverageValueAtSliceEstimateApp
             system.number_of_rotating_particles
         )
         first_derivatives **= 2
-        self.estimate += average(first_derivatives)
-    #@-node:gcross.20090827130017.1724:update
+        self.add(average(first_derivatives))
+    #@-node:gcross.20090827130017.2004:update
     #@-others
-#@-node:gcross.20090827130017.1723:class AverageRotationQuadraticTermEstimate
-#@+node:gcross.20090827130017.1725:class StanderdDeviationAngularVelocityEstimate
-class StandardDeviationAngularVelocityEstimate(SingleAverageValueAtSliceEstimateAppendedToFile):
-    #@    @+others
-    #@+node:gcross.20090827130017.1726:update
-    def update(self):
-        system = self.system
-        mean = float(system.number_of_rotating_particles) / system.number_of_particles
-        first_derivatives, _ = vpi.angular_momentum.compute_angular_derivatives(
-            system.x[self.slice_number],
-            system.rotation_plane_axis_1, system.rotation_plane_axis_2,
-            system.number_of_rotating_particles
-        )
-        self.estimate += average((first_derivatives-mean)**2)
-    #@-node:gcross.20090827130017.1726:update
-    #@+node:gcross.20090827130017.1727:compute_total
-    def compute_total(self):
-        return sqrt(SingleAverageValueAtSliceEstimateAppendedToFile.compute_total(self))
-    #@-node:gcross.20090827130017.1727:compute_total
-    #@-others
-#@-node:gcross.20090827130017.1725:class StanderdDeviationAngularVelocityEstimate
-#@+node:gcross.20090827130017.1728:class AverageAngularSeparationEstimate
+#@-node:gcross.20090827130017.2003:class AverageRotationQuadraticTermEstimate
+#@+node:gcross.20090827130017.2008:class AverageAngularSeparationEstimate
 class AverageAngularSeparationEstimate(SingleAverageValueAtSliceEstimateAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1729:update
+    #@+node:gcross.20090827130017.2009:update
     def update(self):
         system = self.system
         x = system.x[self.slice_number]
         angles = arctan2(x[:,system.rotation_plane_axis_2],x[:,system.rotation_plane_axis_1])
-        self.estimate += vpi.observables.compute_average_angular_separation(angles)
-    #@-node:gcross.20090827130017.1729:update
+        self.add(vpi.observables.compute_average_angular_separation(angles))
+    #@-node:gcross.20090827130017.2009:update
     #@-others
-#@-node:gcross.20090827130017.1728:class AverageAngularSeparationEstimate
-#@+node:gcross.20090827130017.1730:class AverageNeighborAngularSeparationEstimate
+#@-node:gcross.20090827130017.2008:class AverageAngularSeparationEstimate
+#@+node:gcross.20090827130017.2010:class AverageNeighborAngularSeparationEstimate
 class AverageNeighborAngularSeparationEstimate(SingleAverageValueAtSliceEstimateAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1731:update
+    #@+node:gcross.20090827130017.2011:update
     def update(self):
         system = self.system
         x = system.x[self.slice_number]
         angles = arctan2(x[:,system.rotation_plane_axis_2],x[:,system.rotation_plane_axis_1])
-        self.estimate += vpi.observables.compute_avg_neighbor_angular_sep(angles)
-    #@-node:gcross.20090827130017.1731:update
+        self.add(vpi.observables.compute_avg_neighbor_angular_sep(angles))
+    #@-node:gcross.20090827130017.2011:update
     #@-others
-#@-node:gcross.20090827130017.1730:class AverageNeighborAngularSeparationEstimate
-#@+node:gcross.20090827130017.1732:class AverageRotationQuadraticTermEstimate
+#@-node:gcross.20090827130017.2010:class AverageNeighborAngularSeparationEstimate
+#@+node:gcross.20090827130017.2012:class AverageRotationQuadraticTermEstimate
 class AverageRotationQuadraticTermEstimate(SingleAverageValueAtSliceEstimateAppendedToFile):
     #@    @+others
-    #@+node:gcross.20090827130017.1733:update
+    #@+node:gcross.20090827130017.2013:update
     def update(self):
         system = self.system
         x = system.x[self.slice_number]
@@ -778,13 +766,13 @@ class AverageRotationQuadraticTermEstimate(SingleAverageValueAtSliceEstimateAppe
             system.number_of_rotating_particles
         )
         term = (first_derivatives ** 2) / (x[:,system.rotation_plane_axis_2-1]**2+x[:,system.rotation_plane_axis_1-1]**2)
-        self.estimate += average(term)
-    #@-node:gcross.20090827130017.1733:update
+        self.add(average(term))
+    #@-node:gcross.20090827130017.2013:update
     #@-others
-#@-node:gcross.20090827130017.1732:class AverageRotationQuadraticTermEstimate
-#@-node:gcross.20090827130017.1761:Rotation related estimates
+#@-node:gcross.20090827130017.2012:class AverageRotationQuadraticTermEstimate
+#@-node:gcross.20090827130017.1998:Rotation related estimates
 #@-others
-#@-node:gcross.20090827130017.1617:Observable classes
+#@-node:gcross.20090827130017.1895:Observable classes
 #@+node:gcross.20090827130017.1734:Functions
 #@+node:gcross.20090827130017.1735:ensure_path_to_file_exists
 def ensure_path_to_file_exists(path):
