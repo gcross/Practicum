@@ -1,8 +1,5 @@
 #@+leo-ver=4-thin
 #@+node:gcross.20090827130017.1614:@thin system.py
-import sys
-sys.path.append("../../lib")
-
 #@<< Imports >>
 #@+node:gcross.20090827130017.1615:<< Imports >>
 import vpi
