@@ -821,6 +821,10 @@ class System:
         laplacian_of_log_trial_fn = -sum(self.harmonic_oscillator_coefficients)*x.shape[0]
         return gradient_of_log_trial_fn, laplacian_of_log_trial_fn
     #@-node:gcross.20090827130017.1740:compute_trial_derivatives
+    #@+node:gcross.20090828171041.1863:compute_greens_function
+    def compute_greens_function(self,x,xij2,U,gradU2,lam,dt,slice_start,slice_end,particle_number):
+        return vpi.gfn.gfn2_sp(slice_start,slice_end,particle_number,U,dt)
+    #@-node:gcross.20090828171041.1863:compute_greens_function
     #@-node:gcross.20090827130017.1737:Physics Functions
     #@+node:gcross.20090827130017.1741:Observable management
     #@+node:gcross.20090827130017.1742:add_observable
@@ -858,10 +862,6 @@ class System:
         self.move_type_attempted_counts = zeros((3,),'i')
         self.move_type_accepted_counts = zeros((3,),'i')
 
-        U_weights, gU2_weights = vpi.gfn.initialize_4th_order_weights(number_of_slices)
-        self.U_weights = U_weights
-        self.gU2_weights = gU2_weights
-
         self.number_of_observations = self.total_number_of_observations // number_of_processors + 1
         self.total_number_of_observations = self.number_of_observations * number_of_processors
 
@@ -871,7 +871,6 @@ class System:
         self.center_slice_number = number_of_slices // 2
 
         self.observables = []
-
     #@-node:gcross.20090827130017.1744:__init__
     #@+node:gcross.20090827130017.1745:run
     def run(self):
@@ -895,10 +894,7 @@ class System:
         move_type_accepted_counts = self.move_type_accepted_counts
         compute_potential = self.compute_potential
         compute_trial = self.compute_trial
-        U_weights = self.U_weights
-        gU2_weights = self.gU2_weights
-        use_4th_order_green_function = self.use_4th_order_green_function
-
+        compute_greens_function = self.compute_greens_function
         observables = self.observables
         #@-node:gcross.20090827130017.1746:<< Stash properties into local variables >>
         #@nl
@@ -914,9 +910,7 @@ class System:
             low_swap_dimension,high_swap_dimension,
             slice_move_attempted_counts,move_type_attempted_counts,
             slice_move_accepted_counts,move_type_accepted_counts,
-            compute_potential,compute_trial,
-            U_weights,gU2_weights,
-            use_4th_order_green_function,
+            compute_potential,compute_trial,compute_greens_function
         )
         #@nonl
         #@-node:gcross.20090827130017.1747:<< Prethermalize the system >>
@@ -935,9 +929,7 @@ class System:
                 low_swap_dimension,high_swap_dimension,
                 slice_move_attempted_counts,move_type_attempted_counts,
                 slice_move_accepted_counts,move_type_accepted_counts,
-                compute_potential,compute_trial,
-                U_weights,gU2_weights,
-                use_4th_order_green_function,
+                compute_potential,compute_trial,compute_greens_function,
             )
             for observable in observables:
                 observable.update()
