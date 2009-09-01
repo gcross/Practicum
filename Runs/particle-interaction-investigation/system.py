@@ -815,14 +815,13 @@ class System:
     #@+node:gcross.20090901084550.2198:Potential
     #@+node:gcross.20090828201103.1911:compute_potential
     def compute_potential(self,x,xij2):
+        U = zeros(x.shape[:2],dtype=double,order='Fortran')
+        gradU2 = zeros(x.shape[:1],dtype=double,order='Fortran')
         if (vpi.xij.hard_sphere_violation(xij2,self.hard_sphere_radius_squared)):
-            return zeros(x.shape[:2],dtype=double,order='Fortran'), zeros(x.shape[:1],dtype=double,order='Fortran'), True
+            return U, gradU2, True
         else:
-            x_sq = x**2
-            U = array(dot(x_sq,self.harmonic_oscillator_coefficients)/2.0,dtype=double,order='Fortran')
-            number_of_slices = x.shape[0]
+            vpi.harmonic_oscillator_3d.accumulate_potential(x,self.harmonic_oscillator_coefficients,U)
             self.accumulate_effective_potential(x,U)
-            gradU2 = zeros((number_of_slices,),dtype=double,order='Fortran')
             return U, gradU2, False
     #@-node:gcross.20090828201103.1911:compute_potential
     #@+node:gcross.20090901084550.2194:accumulate_effective_potential
@@ -852,19 +851,19 @@ class System:
     #@+node:gcross.20090901084550.2201:Trial
     #@+node:gcross.20090828201103.1912:compute_trial
     def compute_trial(self,x,xij2):
-        weight1, = vpi.trial_harmonic_oscillator_3d.compute_trial_weight(x,self.harmonic_oscillator_coefficients),
-        weight2, reject2 = vpi.trial_hard_sphere.compute_trial_weight(xij2,self.hard_sphere_radius)
+        weight1, = vpi.harmonic_oscillator_3d.compute_trial_weight(x,self.harmonic_oscillator_coefficients),
+        weight2, reject2 = vpi.hard_sphere_interaction.compute_trial_weight(xij2,self.hard_sphere_radius)
         return (weight1+weight2), reject2
     #@-node:gcross.20090828201103.1912:compute_trial
     #@+node:gcross.20090828201103.1913:compute_trial_derivatives
     def compute_trial_derivatives(self,x,xij2):
         gradient_of_log_trial_fn = zeros(x.shape,dtype=double,order='Fortran')
         laplacian_of_log_trial_fn = zeros((),dtype=double,order='Fortran')
-        vpi.trial_harmonic_oscillator_3d.accumulate_trial_derivatives(
+        vpi.harmonic_oscillator_3d.accumulate_trial_derivatives(
             x,self.harmonic_oscillator_coefficients,
             gradient_of_log_trial_fn,laplacian_of_log_trial_fn
         )
-        vpi.trial_hard_sphere.accumulate_trial_derivatives(
+        vpi.hard_sphere_interaction.accumulate_trial_derivatives(
             x,xij2,self.hard_sphere_radius,
             gradient_of_log_trial_fn,laplacian_of_log_trial_fn
         )
