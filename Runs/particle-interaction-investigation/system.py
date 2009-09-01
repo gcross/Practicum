@@ -534,16 +534,7 @@ class EffectivePotentialSliceEnergyEstimate(SliceEnergyEstimate):
     #@    @+others
     #@+node:gcross.20090828201103.1862:update
     def update(self):
-        system = self.system
-        U = zeros((1,system.number_of_particles),dtype=double,order='Fortran')
-        gradU = zeros((1,system.number_of_particles,system.number_of_dimensions),dtype=double,order='Fortran')
-        vpi.angular_momentum.compute_effective_rotational_potential(
-            system.x[self.slice_number:self.slice_number+1],system.lambda_,
-            system.rotation_plane_axis_1,system.rotation_plane_axis_2,
-            system.frame_angular_velocity,system.number_of_rotating_particles,
-            U, gradU
-        )
-        self.add(sum(U))
+        self.add(self.system.compute_effective_potential(self.slice_number))
     #@-node:gcross.20090828201103.1862:update
     #@-others
 #@-node:gcross.20090828201103.1861:class EffectivePotentialSliceEnergyEstimate
@@ -552,7 +543,7 @@ class PhysicalPotentialSliceEnergyEstimate(SliceEnergyEstimate):
     #@    @+others
     #@+node:gcross.20090828201103.1864:update
     def update(self):
-        self.add(sum(dot(self.system.x[self.slice_number]**2,self.system.harmonic_oscillator_coefficients))/2.0)
+            self.add(self.system.compute_physical_potential(self.slice_number))
     #@-node:gcross.20090828201103.1864:update
     #@-others
 #@-node:gcross.20090828201103.1863:class PhysicalPotentialSliceEnergyEstimate
@@ -561,7 +552,7 @@ class TotalPotentialSliceEnergyEstimate(SliceEnergyEstimate):
     #@    @+others
     #@+node:gcross.20090828201103.1866:update
     def update(self):
-        self.add(sum(self.system.U[self.slice_number]))
+        self.add(self.system.compute_total_potential(self.slice_number))
     #@-node:gcross.20090828201103.1866:update
     #@-others
 #@-node:gcross.20090828201103.1865:class TotalPotentialSliceEnergyEstimate
@@ -821,6 +812,7 @@ def ensure_path_to_file_exists(path):
 class System:
     #@    @+others
     #@+node:gcross.20090828201103.1910:Physics Functions
+    #@+node:gcross.20090901084550.2198:Potential
     #@+node:gcross.20090828201103.1911:compute_potential
     def compute_potential(self,x,xij2):
         if (vpi.xij.hard_sphere_violation(xij2,self.hard_sphere_radius_squared)):
@@ -829,25 +821,56 @@ class System:
             x_sq = x**2
             U = array(dot(x_sq,self.harmonic_oscillator_coefficients)/2.0,dtype=double,order='Fortran')
             number_of_slices = x.shape[0]
-            vpi.angular_momentum.accumulate_effective_potential2(
-                x,self.lambda_,
-                self.rotation_plane_axis_1,self.rotation_plane_axis_2,
-                self.frame_angular_velocity,self.number_of_rotating_particles,
-                U
-            )
+            self.accumulate_effective_potential(x,U)
             gradU2 = zeros((number_of_slices,),dtype=double,order='Fortran')
             return U, gradU2, False
     #@-node:gcross.20090828201103.1911:compute_potential
+    #@+node:gcross.20090901084550.2194:accumulate_effective_potential
+    def accumulate_effective_potential(self,x,U):
+        vpi.angular_momentum.accumulate_effective_potential(
+            x,self.lambda_,
+            self.rotation_plane_axis_1,self.rotation_plane_axis_2,
+            self.frame_angular_velocity,self.number_of_rotating_particles,
+            U
+        )
+    #@-node:gcross.20090901084550.2194:accumulate_effective_potential
+    #@+node:gcross.20090901084550.2195:compute_effective_potential
+    def compute_effective_potential(self,slice_number):
+        return self.compute_total_potential(slice_number)-self.compute_physical_potential(slice_number)
+    #@-node:gcross.20090901084550.2195:compute_effective_potential
+    #@+node:gcross.20090901084550.2197:compute_physical_potential
+    def compute_physical_potential(self,slice_number):
+        x_sq = self.x[slice_number]**2
+        U = array(dot(x_sq,self.harmonic_oscillator_coefficients)/2.0,dtype=double,order='Fortran')
+        return sum(U)
+    #@-node:gcross.20090901084550.2197:compute_physical_potential
+    #@+node:gcross.20090901084550.2200:compute_total_potential
+    def compute_total_potential(self,slice_number):
+        return sum(self.U[slice_number])
+    #@-node:gcross.20090901084550.2200:compute_total_potential
+    #@-node:gcross.20090901084550.2198:Potential
+    #@+node:gcross.20090901084550.2201:Trial
     #@+node:gcross.20090828201103.1912:compute_trial
-    def compute_trial(self,x,_):
-        return -sum(dot(x**2,self.harmonic_oscillator_coefficients))/2
+    def compute_trial(self,x,xij2):
+        weight1, = vpi.trial_harmonic_oscillator_3d.compute_trial_weight(x,self.harmonic_oscillator_coefficients),
+        weight2, reject2 = vpi.trial_hard_sphere.compute_trial_weight(xij2,self.hard_sphere_radius)
+        return (weight1+weight2), reject2
     #@-node:gcross.20090828201103.1912:compute_trial
     #@+node:gcross.20090828201103.1913:compute_trial_derivatives
     def compute_trial_derivatives(self,x,xij2):
-        gradient_of_log_trial_fn = -x*self.harmonic_oscillator_coefficients
-        laplacian_of_log_trial_fn = -sum(self.harmonic_oscillator_coefficients)*x.shape[0]
+        gradient_of_log_trial_fn = zeros(x.shape,dtype=double,order='Fortran')
+        laplacian_of_log_trial_fn = zeros((),dtype=double,order='Fortran')
+        vpi.trial_harmonic_oscillator_3d.accumulate_trial_derivatives(
+            x,self.harmonic_oscillator_coefficients,
+            gradient_of_log_trial_fn,laplacian_of_log_trial_fn
+        )
+        vpi.trial_hard_sphere.accumulate_trial_derivatives(
+            x,xij2,self.hard_sphere_radius,
+            gradient_of_log_trial_fn,laplacian_of_log_trial_fn
+        )
         return gradient_of_log_trial_fn, laplacian_of_log_trial_fn
     #@-node:gcross.20090828201103.1913:compute_trial_derivatives
+    #@-node:gcross.20090901084550.2201:Trial
     #@+node:gcross.20090828201103.1914:compute_greens_function
     def compute_greens_function(self,x,xij2,U,gradU2,lam,dt,slice_start,slice_end,particle_number):
         return (
