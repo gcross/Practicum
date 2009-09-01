@@ -98,7 +98,7 @@ class EstimatesAppendedToFile(Observable):
         with open(self.filename,"a") as f:
             print >> f, self.label,
             for value, error in izip(total_estimate,total_estimate_error):
-                print >> f, value, error
+                print >> f, value, error,
             print >> f
     #@-node:gcross.20090828201103.1803:write_out
     #@-others
