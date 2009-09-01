@@ -153,8 +153,8 @@ class PositionDensity1DHistogram(Histogram):
     #@+node:gcross.20090828201103.1813:__init__
     def __init__(self,slice_number,left,right,number_of_bins,filenames):
         assert len(left) == len(right)
-        self.left = left
-        self.right = right
+        self.left = array(left,dtype=double,order='Fortran')
+        self.right = array(right,dtype=double,order='Fortran')
         self.number_of_bins = number_of_bins
         self.slice_number = slice_number
         self.histogram = zeros((len(left),number_of_bins),dtype='i',order='Fortran')
