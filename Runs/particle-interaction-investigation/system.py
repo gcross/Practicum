@@ -903,14 +903,14 @@ class System:
         hard_sphere_condition_violated = True
         self.hard_sphere_radius_squared = self.hard_sphere_radius**2
         number_of_attempts = 0
-        while(hard_sphere_condition_violated and number_of_attempts < 100):
+        while(hard_sphere_condition_violated and number_of_attempts < 1000):
             number_of_attempts += 1
             self.x = vpi.lattice.make_lattice(self.initial_particle_distribution_size,number_of_slices,number_of_particles,number_of_dimensions)
             self.xij2 = zeros((number_of_slices,number_of_particles,number_of_particles),dtype=double,order='Fortran')
             vpi.xij.update_xij(self.xij2,self.x)
             hard_sphere_condition_violated = vpi.xij.hard_sphere_violation(self.xij2[0:1],self.hard_sphere_radius_squared)
-        if(number_of_attempts == 100):
-            print >> sys.stderr, "Failed in 100 attempts to construct a system where no two particles violated the hard sphere condition."
+        if(number_of_attempts >= 1000):
+            print >> sys.stderr, "Failed in 1000 attempts to construct a system where no two particles violated the hard sphere condition."
             comm.Abort(-1)
 
         self.U = zeros((number_of_slices,number_of_particles),dtype=double,order='Fortran')

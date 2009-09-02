@@ -12,7 +12,6 @@
 <v t="gcross.20090818114910.1224" str_leo_pos="1"><vh>@chapters</vh></v>
 <v t="gcross.20090828201103.1779"><vh>@path particle-interaction-investigation</vh>
 <v t="gcross.20090828201103.1780"><vh>@thin run.py</vh></v>
-<v t="gcross.20090828201103.1786"><vh>@thin system.py</vh></v>
 </v>
 <v t="gcross.20090827130017.1478"><vh>@path frame-rotation-investigation</vh>
 <v t="gcross.20090827130017.1769"><vh>@thin run.py</vh></v>
