@@ -10,3 +10,4 @@ _region_*
 *.out
 *.pyc
 *data*
+.nfs*
