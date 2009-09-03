@@ -10,8 +10,11 @@
 <find_panel_settings/>
 <vnodes>
 <v t="gcross.20090818114910.1224" str_leo_pos="1"><vh>@chapters</vh></v>
-<v t="gcross.20090828201103.1779"><vh>@path particle-interaction-investigation</vh>
+<v t="gcross.20090828201103.1779"><vh>@path backflow-experimentation</vh>
 <v t="gcross.20090828201103.1780"><vh>@thin run.py</vh></v>
+</v>
+<v t="gcross.20090903090230.2054"><vh>@path particle-interaction-investigation</vh>
+<v t="gcross.20090903090230.2055"><vh>@thin run.py</vh></v>
 </v>
 <v t="gcross.20090827130017.1478"><vh>@path frame-rotation-investigation</vh>
 <v t="gcross.20090827130017.1769"><vh>@thin run.py</vh></v>
@@ -46,5 +49,6 @@
 <t tx="gcross.20090821120721.1288"></t>
 <t tx="gcross.20090827130017.1478"></t>
 <t tx="gcross.20090828201103.1779"></t>
+<t tx="gcross.20090903090230.2054"></t>
 </tnodes>
 </leo_file>
