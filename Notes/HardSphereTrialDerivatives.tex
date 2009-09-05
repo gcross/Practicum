@@ -1,0 +1,89 @@
+%@+leo-ver=4-thin
+%@+node:gcross.20090904125219.1316:@thin HardSphereTrialDerivatives.tex
+%@@language latex
+\documentclass[onecolumn,amsmath,amssymb,nofootinbib,floatfix]{revtex4}
+
+\input{notes-prelude.in}
+
+\begin{document}
+
+The hard sphere trial function is given by
+$$
+\begin{aligned}
+\Psi_T &= \prod_{i\le j} \paren{1-\frac{a}{r_{ij}}}, \\
+\ln \Psi_T &= \sum_{i\le j} \ln\paren{1-\frac{a}{r_{ij}}}, \\
+\end{aligned}
+$$
+where $r_{ij} := \sqrt{\sum_k \paren{x_i^k-x_j^k}^2}$, where $x_i^k$ is the $k$-th coordinate of the $i$-th particle.
+
+Observe that
+$$\pdrv{r_{ij}}{x_{i'}^{k'}} = \pdrv{}{x_{i'}^{k'}} \sqrt{\sum_k \paren{x_i^k-x_j^k}^2} = \frac{(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}}.$$
+Ergo,
+$$
+\begin{aligned}
+\pdrv{\ln \Psi_T}{x_{i'}^{k'}}
+&= \sum_{i\le j}\frac{a(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^3\paren{1-\frac{a}{r_{ij}}}},\\
+&= \sum_{i\le j}\frac{a(x_i^{k'}-x_j^{k'})\delta_{ii'}}{r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}+\sum_{i\le j}\frac{a(x_j^{k'}-x_i^{k'})\delta_{ji'}}{r_{ij}^3\paren{1-\frac{a}{r_{ij}}}},\\
+&= \sum_{i'\le j}\frac{a(x_{i'}^{k'}-x_j^{k'})}{r_{{i'}j}^3\paren{1-\frac{a}{r_{{i'}j}}}}+\sum_{i\le {i'}}\frac{a(x_{i'}^{k'}-x_i^{k'})}{r_{i{i'}}^3\paren{1-\frac{a}{r_{i{i'}}}}},\\
+&= \sum_{i'\le i}\frac{a(x_{i'}^{k'}-x_i^{k'})}{r_{{i'}i}^3\paren{1-\frac{a}{r_{{i'}i}}}}+\sum_{i\le {i'}}\frac{a(x_{i'}^{k'}-x_i^{k'})}{r_{{i'}i}^3\paren{1-\frac{a}{r_{{i'}i}}}},\\
+&= \sum_{i}\frac{a(x_{i'}^{k'}-x_i^{k'})}{r_{{i'}i}^3\paren{1-\frac{a}{r_{{i'}i}}}},\\
+\pdrv{\ln \Psi_T}{x_i^k} &= \sum_j\frac{a(x_i^k-x_j^k)}{r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}.\\
+\end{aligned}
+$$
+
+For the Feynman fixed phase trial function, where we assume that $k1$ and $k2$ are the coordinate axes of the plane of rotation, the backflow correction is given by,
+$$
+\begin{aligned}
+\Phi_{B}
+&=\paren{\sum_{i,k} \pdrv{\ln\Psi_T}{x_i^k} \hat x_i^k}\cdot \paren{\sum_j\frac{\hat\theta_j}{\rho_j}} \\
+&=\paren{\sum_{i,k} \pdrv{\ln\Psi_T}{x_i^k} \hat x_i^k}\cdot \paren{\sum_j\frac{\sin\theta_j \hat x_j^{k_1} - \cos\theta_j \hat x_j^{k_2}}{\rho_j}} \\
+&=\paren{\sum_{i,k} \pdrv{\ln\Psi_T}{x_i^k} \hat x_i^k}\cdot \paren{\sum_j\frac{x_j^{k_2}\hat x_j^{k_1} - x_j^{k_1}\hat x_j^{k_2}}{\rho_j^2}} \\
+&=\sum_{i,j} \frac{a\left[(x_i^{k_1}-x_j^{k_1})x_i^{k_2}-(x_i^{k_2}-x_j^{k_2})x_i^{k_1}\right]}{\rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}} \\
+&=\sum_{i,j} \frac{a\left[x_i^{k_1}x_j^{k_2}-x_i^{k_2}x_j^{k_1}\right]}{\rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}} \\
+\end{aligned}
+$$
+
+Now we compute the partial derivatives of this beast.  First, observe that
+$$\pdrv{\rho_i}{x_{i'}^{k'}} = \pdrv{}{x_{i'}^{k'}}\sqrt{(x_i^{k_1})^2+(x_i^{k_2})^2} = \frac{x_{i'}^{k'}\delta_{i'i}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i}.$$
+With this, we now compute the partial derivatives of the denominator,
+$$
+\begin{aligned}
+\pdrv{}{x_{i'}^{k'}} \rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}
+&=  x_{i'}^{k'}\delta_{i'i}(\delta_{k'k_1} + \delta_{k'k_2}) r_{ij}^3\paren{1-\frac{a}{r_{ij}}}
+      +\rho_i^2 r_{ij}(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})\paren{1-\frac{a}{r_{ij}}}
+      + \rho_i^2 a (x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})\\
+\frac{\pdrv{}{x_{i'}^{k'}} \rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}{\rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}
+&=  \frac{x_{i'}^{k'}\delta_{i'i}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i^2}
+      +\frac{(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^2}
+      + \frac{a (x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}\\
+\end{aligned}
+$$
+Now the partial derivatives of the numerator,
+$$
+\begin{aligned}
+\pdrv{}{x_{i'}^{k'}}\left[x_i^{k_1}x_j^{k_2}-x_i^{k_2}x_j^{k_1}\right]
+&= 
+x_j^{k_2}\delta_{i'i}\delta_{k'k_1}+x_i^{k_1}\delta_{i'j}\delta_{k'k_2}
+-x_j^{k_2}\delta_{i'i}\delta_{k'k_2}-x_i^{k_2}\delta_{i'j}\delta_{k'k_1}\\
+&= x_j^{k_2}\delta_{i'i}(\delta_{k'k_1}-\delta_{k'k_2})+x_i^{k_1}\delta_{i'j}(\delta_{k'k_2}-\delta_{k'k_1})\\
+\end{aligned}
+$$
+
+Putting everything together, we obtain
+
+$$
+\begin{aligned}
+&\pdrv{}{x_{i'}^{k'}}\Phi_{B} = \sum_{ij} \overbrace{\left[\rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}\right]^{-1}}^{D_{ij}}\times \\ &\bigg\{x_j^{k_2}\delta_{i'i}(\delta_{k'k_1}-\delta_{k'k_2})+x_i^{k_1}\delta_{i'j}(\delta_{k'k_2}-\delta_{k'k_1}) \\
+&+ \underbrace{\left[x_i^{k_1}x_j^{k_2}-x_i^{k_2}x_j^{k_1}\right]}_{C_{ij}}\left[\frac{x_{i'}^{k'}\delta_{i'i}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i^2}
+      +\frac{(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^2}
+      + \frac{a (x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}\right]\bigg\}\\
+&\pdrv{}{x_{i'}^{k'}}\Phi_{B} = \sum_{j} \bigg\{x_j^{k_2}D_{i'j}(\delta_{k'k_1}-\delta_{k'k_2})+x_j^{k_1}D_{ji'}(\delta_{k'k_2}-\delta_{k'k_1}) \\
+&+ \left[\frac{x_{i'}^{k'}C_{i'j}D_{i'j}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i'^2}
+      +\frac{(x_{i'}^{k'}-x_j^{k'})(C_{i'j}D_{i'j}-C_{ji'}D_{ji'})}{r_{i'j}^2}
+      + \frac{a (x_{i'}^{k'}-x_j^{k'})(C_{i'j}D_{i'j}-C_{ji'}D_{ji'})}{r_{i'j}^3\paren{1-\frac{a}{r_{i'j}}}}\right]\bigg\}\\
+\end{aligned}
+$$
+
+\end{document}
+%@-node:gcross.20090904125219.1316:@thin HardSphereTrialDerivatives.tex
+%@-leo
