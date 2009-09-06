@@ -24,7 +24,7 @@ def make_r(x):
 #@+node:gcross.20090904201537.1562:make_rho
 def make_rho(x):
     def rho(i):
-        return sqrt(pysum(x[i,0:1]**2))
+        return sqrt(pysum(x[i,0:2]**2))
     return rho
 #@-node:gcross.20090904201537.1562:make_rho
 #@+node:gcross.20090904201537.1794:make_diff_log_trial
@@ -80,25 +80,6 @@ from __builtin__ import sum as pysum
 #@+node:gcross.20090904201537.1557:<< Tests >>
 #@+others
 #@+node:gcross.20090904201537.1795:(verified)
-#@+node:gcross.20090904201537.1563:test_diff_r
-@with_checker
-def test_diff_r(self,
-    number_of_particles=irange(2,5),
-    number_of_dimensions=irange(1,5),
-  ):
-    x = make_x(number_of_particles,number_of_dimensions)
-    r = make_r(x)
-    i = randint(0,number_of_particles-2)
-    j = randint(i+1,number_of_particles-1)
-    if number_of_dimensions == 1:
-        k = 0
-    else:
-        k = randint(0,number_of_dimensions-1)
-
-    substitutions = generate_random_substitutions(*x.ravel())
-    self.assertAlmostEqual(r(i,j).diff(x[i,k]).subs(substitutions),(+(x[i,k]-x[j,k])/r(i,j)).subs(substitutions))
-    self.assertAlmostEqual(r(i,j).diff(x[j,k]).subs(substitutions),(-(x[i,k]-x[j,k])/r(i,j)).subs(substitutions))
-#@-node:gcross.20090904201537.1563:test_diff_r
 #@+node:gcross.20090904201537.1789:test_diff_log_trial
 @with_checker
 def test_diff_log_trial(self,
@@ -148,34 +129,120 @@ def test_backflow(self,
 
     self.assertAlmostEqual(computed_backflow.subs(substitutions),formula_backflow.subs(substitutions))
 #@-node:gcross.20090904201537.1797:test_backflow
+#@+node:gcross.20090906145419.1341:test_diff_r
+@with_checker
+def test_diff_r(self,
+    number_of_particles=irange(2,5),
+    number_of_dimensions=irange(1,5),
+  ):
+    x = make_x(number_of_particles,number_of_dimensions)
+    r = make_r(x)
+    i = randint(0,number_of_particles-2)
+    j = randint(i+1,number_of_particles-1)
+    if number_of_dimensions == 1:
+        k = 0
+    else:
+        k = randint(0,number_of_dimensions-1)
+
+    substitutions = generate_random_substitutions(*x.ravel())
+    self.assertAlmostEqual(r(i,j).diff(x[i,k]).subs(substitutions),(+(x[i,k]-x[j,k])/r(i,j)).subs(substitutions))
+    self.assertAlmostEqual(r(i,j).diff(x[j,k]).subs(substitutions),(-(x[i,k]-x[j,k])/r(i,j)).subs(substitutions))
+#@-node:gcross.20090906145419.1341:test_diff_r
+#@+node:gcross.20090906145419.1345:test_diff_r_cubed
+@with_checker
+def test_diff_r_cubed(self,
+    number_of_particles=irange(2,5),
+    number_of_dimensions=irange(1,5),
+  ):
+    x = make_x(number_of_particles,number_of_dimensions)
+    i = randint(0,number_of_particles-2)
+    j = randint(i+1,number_of_particles-1)
+    r_ij = make_r(x)(i,j)
+    if number_of_dimensions == 1:
+        k = 0
+    else:
+        k = randint(0,number_of_dimensions-1)
+
+    substitutions = generate_random_substitutions(*x.ravel())
+    self.assertAlmostEqual((r_ij**3).diff(x[i,k]).subs(substitutions),(3.0*r_ij*(+(x[i,k]-x[j,k]))).subs(substitutions))
+    self.assertAlmostEqual((r_ij**3).diff(x[j,k]).subs(substitutions),(3.0*r_ij*(-(x[i,k]-x[j,k]))).subs(substitutions))
+#@-node:gcross.20090906145419.1345:test_diff_r_cubed
+#@+node:gcross.20090904201537.1563:test_diff_rho
+@with_checker
+def test_diff_rho(self,
+    number_of_particles=irange(2,5),
+    number_of_dimensions=irange(2,5),
+  ):
+    x = make_x(number_of_particles,number_of_dimensions)
+    i = randint(0,number_of_particles-1)
+    rho_i = make_rho(x)(i)
+
+    substitutions = generate_random_substitutions(*x.ravel())
+
+    for k in xrange(number_of_dimensions):
+        if k == 0 or k == 1:
+            self.assertAlmostEqual(rho_i.diff(x[i,k]).subs(substitutions),(x[i,k]/rho_i).subs(substitutions))
+            ip = i
+            while ip == i:
+                ip = randint(0,number_of_particles-1)
+            self.assertAlmostEqual(rho_i.diff(x[ip,k]).subs(substitutions),0)
+        else:
+            for ip in xrange(number_of_particles):
+                self.assertAlmostEqual(rho_i.diff(x[ip,k]).subs(substitutions),0)
+#@-node:gcross.20090904201537.1563:test_diff_rho
+#@+node:gcross.20090906145419.1351:test_diff_rho_squared
+@with_checker
+def test_diff_rho_squared(self,
+    number_of_particles=irange(2,5),
+    number_of_dimensions=irange(2,5),
+  ):
+    x = make_x(number_of_particles,number_of_dimensions)
+    i = randint(0,number_of_particles-1)
+    rho_i = make_rho(x)(i)
+
+    substitutions = generate_random_substitutions(*x.ravel())
+
+    rho_i_squared = rho_i**2
+
+    for k in xrange(number_of_dimensions):
+        if k == 0 or k == 1:
+            self.assertAlmostEqual(rho_i_squared.diff(x[i,k]).subs(substitutions),(2.0*x[i,k]).subs(substitutions))
+            ip = i
+            while ip == i:
+                ip = randint(0,number_of_particles-1)
+            self.assertAlmostEqual(rho_i_squared.diff(x[ip,k]).subs(substitutions),0)
+        else:
+            for ip in xrange(number_of_particles):
+                self.assertAlmostEqual(rho_i_squared.diff(x[ip,k]).subs(substitutions),0)
+#@-node:gcross.20090906145419.1351:test_diff_rho_squared
+#@+node:gcross.20090905201409.1340:test_gradient_backflow_denominator
+@with_checker(number_of_calls=100)
+def test_gradient_backflow_denominator(self,
+    number_of_particles=irange(2,5),
+    number_of_dimensions=irange(2,5),
+  ):
+    x = make_x(number_of_particles,number_of_dimensions)
+    a = Symbol('a')
+    r = make_r(x)
+    rho = make_rho(x)
+
+    i = randint(0,number_of_particles-2)
+    j = randint(i+1,number_of_particles-1)
+
+    denominator = rho(i)**2 * r(i,j)**3 * (1-a/r(i,j))
+    substitutions = generate_random_substitutions(a,*(x.ravel()))
+
+    for ip in xrange(number_of_particles):
+        for kp in xrange(number_of_dimensions):
+            computed = denominator.diff(x[ip,kp])
+            formula = gradient_backflow_denominator(a,r,rho,x,i,j,ip,kp)
+            self.assertAlmostEqual(computed.subs(substitutions),formula.subs(substitutions))
+#@-node:gcross.20090905201409.1340:test_gradient_backflow_denominator
 #@-node:gcross.20090904201537.1795:(verified)
 #@+node:gcross.20090904201537.1560:TestContainer
 class TestContainer(unittest.TestCase):
     pass
     #@    @+others
-    #@+node:gcross.20090905201409.1340:test_gradient_backflow_denominator
-    @with_checker(number_of_calls=100)
-    def test_gradient_backflow_denominator(self,
-        number_of_particles=irange(2,5),
-        number_of_dimensions=irange(2,5),
-      ):
-        x = make_x(number_of_particles,number_of_dimensions)
-        a = Symbol('a')
-        r = make_r(x)
-        rho = make_rho(x)
-
-        i = randint(0,number_of_particles-2)
-        j = randint(i+1,number_of_particles-1)
-
-        denominator = rho(i)**2 * r(i,j)**3 * (1-a/r(i,j))
-        substitutions = generate_random_substitutions(a,*(x.ravel()))
-
-        for ip in xrange(number_of_particles):
-            for kp in xrange(number_of_dimensions):
-                computed = denominator.diff(x[ip,kp])
-                formula = gradient_backflow_denominator(a,r,rho,x,i,j,ip,kp)
-                self.assertAlmostEqual(computed.subs(substitutions),formula.subs(substitutions))
-    #@-node:gcross.20090905201409.1340:test_gradient_backflow_denominator
     #@-others
 #@-node:gcross.20090904201537.1560:TestContainer
 #@-others
