@@ -43,6 +43,24 @@ def backflow(a,r,rho,x):
             for i in xrange(number_of_particles) for j in xrange(number_of_particles) if i != j
         )
 #@-node:gcross.20090904201537.1799:backflow
+#@+node:gcross.20090905201409.1346:backflow_gradient_denominator
+def gradient_backflow_denominator(a,r,rho,x,i,j,ip,kp):
+    number_of_particles = x.shape[0]
+    r_ij = r(i,j)
+    rho_i = rho(i)
+    formula = 0.0 * x[ip,kp]
+    if i==ip and (kp == 0 or kp == 1):
+        formula += 2.0 * x[ip,kp] * r_ij**3 * (1.0-a/r_ij)
+    if (i==ip):
+        factor = +1.0
+    elif (j==ip):
+        factor = -1.0
+    else:
+        factor = 0.0
+    if factor:
+        formula += factor*(rho_i**2 * 3.0 * r_ij * (x[i,kp]-x[j,kp]) * (1.0-a/r_ij) + rho_i**2 * a * (x[i,kp]-x[j,kp])) 
+    return formula
+#@-node:gcross.20090905201409.1346:backflow_gradient_denominator
 #@-node:gcross.20090904201537.1798:Formula Factories
 #@-others
 
@@ -135,6 +153,29 @@ def test_backflow(self,
 class TestContainer(unittest.TestCase):
     pass
     #@    @+others
+    #@+node:gcross.20090905201409.1340:test_gradient_backflow_denominator
+    @with_checker(number_of_calls=100)
+    def test_gradient_backflow_denominator(self,
+        number_of_particles=irange(2,5),
+        number_of_dimensions=irange(2,5),
+      ):
+        x = make_x(number_of_particles,number_of_dimensions)
+        a = Symbol('a')
+        r = make_r(x)
+        rho = make_rho(x)
+
+        i = randint(0,number_of_particles-2)
+        j = randint(i+1,number_of_particles-1)
+
+        denominator = rho(i)**2 * r(i,j)**3 * (1-a/r(i,j))
+        substitutions = generate_random_substitutions(a,*(x.ravel()))
+
+        for ip in xrange(number_of_particles):
+            for kp in xrange(number_of_dimensions):
+                computed = denominator.diff(x[ip,kp])
+                formula = gradient_backflow_denominator(a,r,rho,x,i,j,ip,kp)
+                self.assertAlmostEqual(computed.subs(substitutions),formula.subs(substitutions))
+    #@-node:gcross.20090905201409.1340:test_gradient_backflow_denominator
     #@-others
 #@-node:gcross.20090904201537.1560:TestContainer
 #@-others
