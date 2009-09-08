@@ -53,8 +53,8 @@ $$
       +3\rho_i^2 r_{ij}(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})\paren{1-\frac{a}{r_{ij}}}
       + \rho_i^2 a (x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})\\
 \frac{\pdrv{}{x_{i'}^{k'}} \rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}{\rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}
-&=  \frac{x_{i'}^{k'}\delta_{i'i}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i^2}
-      +\frac{(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^2}
+&=  \frac{2x_{i'}^{k'}\delta_{i'i}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i^2}
+      +\frac{3(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^2}
       + \frac{a (x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}\\
 \end{aligned}
 $$
@@ -64,8 +64,9 @@ $$
 \pdrv{}{x_{i'}^{k'}}\left[x_i^{k_1}x_j^{k_2}-x_i^{k_2}x_j^{k_1}\right]
 &= 
 x_j^{k_2}\delta_{i'i}\delta_{k'k_1}+x_i^{k_1}\delta_{i'j}\delta_{k'k_2}
--x_j^{k_2}\delta_{i'i}\delta_{k'k_2}-x_i^{k_2}\delta_{i'j}\delta_{k'k_1}\\
-&= x_j^{k_2}\delta_{i'i}(\delta_{k'k_1}-\delta_{k'k_2})+x_i^{k_1}\delta_{i'j}(\delta_{k'k_2}-\delta_{k'k_1})\\
+-x_j^{k_1}\delta_{i'i}\delta_{k'k_2}-x_i^{k_2}\delta_{i'j}\delta_{k'k_1}\\
+% &= \paren{x_j^{k_2}\delta_{i'i} - x_i^{k_2}\delta_{i'j}}\delta_{k'k_1} - \paren{x_j^{k_1}\delta_{i'i} - x_i^{k_1}\delta_{i'j}}\delta_{k'k_2} \\
+&= \paren{x_j^{k_2}\delta_{k'k_1}-x_j^{k_1}\delta_{k'k_2}}\delta_{i'i} - \paren{x_i^{k_2}\delta_{k'k_1}-x_i^{k_1}\delta_{k'k_2}}\delta_{i'j}
 \end{aligned}
 $$
 
@@ -73,14 +74,30 @@ Putting everything together, we obtain
 
 $$
 \begin{aligned}
-&\pdrv{}{x_{i'}^{k'}}\Phi_{B} = \sum_{ij} \overbrace{\left[\rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}\right]^{-1}}^{D_{ij}}\times \\ &\bigg\{x_j^{k_2}\delta_{i'i}(\delta_{k'k_1}-\delta_{k'k_2})+x_i^{k_1}\delta_{i'j}(\delta_{k'k_2}-\delta_{k'k_1}) \\
-&+ \underbrace{\left[x_i^{k_1}x_j^{k_2}-x_i^{k_2}x_j^{k_1}\right]}_{C_{ij}}\left[\frac{x_{i'}^{k'}\delta_{i'i}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i^2}
-      +\frac{(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^2}
+&\qquad\pdrv{}{x_{i'}^{k'}}\Phi_{B} = a\sum_{ij} \left[\rho_i^2\cdot\overbrace{r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}^{D_{ij}}\right]^{-1}\times \\ &\qquad\bigg\{\paren{x_j^{k_2}\delta_{k'k_1}-x_j^{k_1}\delta_{k'k_2}}\delta_{i'i} - \paren{x_i^{k_2}\delta_{k'k_1}-x_i^{k_1}\delta_{k'k_2}}\delta_{i'j} \\
+&\qquad- \underbrace{\left[x_i^{k_1}x_j^{k_2}-x_i^{k_2}x_j^{k_1}\right]}_{C_{ij}}\left[\frac{2x_{i'}^{k'}\delta_{i'i}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i^2}
+      +\frac{3(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^2}
       + \frac{a (x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}\right]\bigg\}\\
-&\pdrv{}{x_{i'}^{k'}}\Phi_{B} = \sum_{j} \bigg\{x_j^{k_2}D_{i'j}(\delta_{k'k_1}-\delta_{k'k_2})+x_j^{k_1}D_{ji'}(\delta_{k'k_2}-\delta_{k'k_1}) \\
-&+ \left[\frac{x_{i'}^{k'}C_{i'j}D_{i'j}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i'^2}
-      +\frac{(x_{i'}^{k'}-x_j^{k'})(C_{i'j}D_{i'j}-C_{ji'}D_{ji'})}{r_{i'j}^2}
-      + \frac{a (x_{i'}^{k'}-x_j^{k'})(C_{i'j}D_{i'j}-C_{ji'}D_{ji'})}{r_{i'j}^3\paren{1-\frac{a}{r_{i'j}}}}\right]\bigg\}\\
+%&\pdrv{}{x_{i'}^{k'}}\Phi_{B} = \sum_{j} \bigg\{x_j^{k_2}D_{i'j}(\delta_{k'k_1}-\delta_{k'k_2})+x_j^{k_1}D_{ji'}(\delta_{k'k_2}-\delta_{k'k_1}) \\
+%&+ \left[\frac{x_{i'}^{k'}C_{i'j}D_{i'j}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_i'^2}
+%      +\frac{(x_{i'}^{k'}-x_j^{k'})(C_{i'j}D_{i'j}-C_{ji'}D_{ji'})}{r_{i'j}^2}
+%      + \frac{a (x_{i'}^{k'}-x_j^{k'})(C_{i'j}D_{i'j}-C_{ji'}D_{ji'})}{r_{i'j}^3\paren{1-\frac{a}{r_{i'j}}}}\right]\bigg\}\\
+&\pdrv{}{x_{i'}^{k'}}\Phi_{B} = a\sum_{ij} \bigg\{\rho_i^{-2}D_{ij}^{-1}\paren{x_j^{k_2}\delta_{k'k_1}-x_j^{k_1}\delta_{k'k_2}}\delta_{i'i}
+            -\rho_i^{-2}D_{ij}^{-1}\paren{x_i^{k_2}\delta_{k'k_1}-x_i^{k_1}\delta_{k'k_2}}\delta_{i'j} \\
+&\qquad- \left[\frac{2C_{ij}x_{i'}^{k'}\delta_{i'i}(\delta_{k'k_1} + \delta_{k'k_2})}{D_{ij}\rho_i^4}
+      +\frac{3C_{ij}(x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{D_{ij}\rho_i^2 r_{ij}^2}
+      + \frac{C_{ij}a (x_i^{k'}-x_j^{k'})(\delta_{ii'}-\delta_{ji'})}{D_{ij}\rho_i^2 r_{ij}^3\paren{1-\frac{a}{r_{ij}}}}\right]\bigg\}\\
+&\pdrv{}{x_{i'}^{k'}}\Phi_{B} = a\sum_{j} \bigg\{\rho_{i'}^{-2}D_{i'j}^{-1}\paren{x_j^{k_2}\delta_{k'k_1}-x_j^{k_1}\delta_{k'k_2}}
+                    -\rho_j^{-2}D_{j{i'}}^{-1}\paren{x_i^{k_2}\delta_{k'k_1}-x_i^{k_1}\delta_{k'k_2}} \\
+&\qquad- \left[\frac{2C_{i'j}x_{i'}^{k'}(\delta_{k'k_1} + \delta_{k'k_2})}{D_{i'j}\rho_{i'}^4}
+      +\frac{3C_{i'j}(x_{i'}^{k'}-x_j^{k'})}{D_{i'j}\rho_{i'}^2 r_{i'j}^2}-\frac{3C_{ji'}(x_j^{k'}-x_{i'}^{k'})}{D_{ji'}\rho_j^2 r_{ji'}^2}
+      + \frac{C_{i'j}a (x_{i'}^{k'}-x_j^{k'})}{D_{i'j}\rho_{i'}^2 r_{i'j}^3\paren{1-\frac{a}{r_{i'j}}}}- \frac{C_{ji'}a (x_j^{k'}-x_{i'}^{k'})}{D_{ji'}\rho_j^2 r_{ji'}^3\paren{1-\frac{a}{r_{ji'}}}}
+      \right]\bigg\}\\
+&\pdrv{}{x_{i'}^{k'}}\Phi_{B} = a\sum_{j}\frac{1}{D_{i'j}}\bigg\{\paren{x_j^{k_2}\delta_{k'k_1}-x_j^{k_1}\delta_{k'k_2}}\paren{\frac{1}{\rho_{i'}^2}-\frac{1}{\rho_j^2}} \\
+&\qquad\qquad
+      - C_{i'j}\left[\frac{2x_{i'}^{k'}(\delta_{k'k_1} + \delta_{k'k_2})}{\rho_{i'}^4}
+      +\frac{(x_{i'}^{k'}-x_j^{k'})}{r_{i'j}^2}\paren{\frac{1}{\rho_{i'}^2}-\frac{1}{\rho_j^2}}\paren{3+\frac{a}{r_{i'j}\paren{1-\frac{a}{r_{i'j}}}}}
+      \right]\bigg\}\\
 \end{aligned}
 $$
 
