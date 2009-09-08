@@ -3,7 +3,7 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
 <globals body_outline_ratio="0.5">
-	<global_window_position top="0" left="1" height="564" width="1270"/>
+	<global_window_position top="22" left="1" height="564" width="1270"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -37,6 +37,7 @@
 <v t="gcross.20090729160450.1251"><vh>check</vh></v>
 </v>
 </v>
+<v t="gcross.20090904201537.1554"><vh>@thin test_backflow.py</vh></v>
 <v t="gcross.20090730140239.1301"><vh>LaTeX Notes</vh>
 <v t="gcross.20090730140239.1305"><vh>@thin SConstruct</vh></v>
 <v t="gcross.20090730140239.1304"><vh>@thin notes-prelude.in</vh></v>
@@ -63,6 +64,9 @@
 </v>
 <v t="gcross.20090827093130.1303"><vh>ImaginaryPart.pdf</vh>
 <v t="gcross.20090827093130.1304"><vh>@thin ImaginaryPart.tex</vh></v>
+</v>
+<v t="gcross.20090904125219.1313" a="E"><vh>HardSphereTrialDerivatives.pdf</vh>
+<v t="gcross.20090904125219.1316"><vh>@thin HardSphereTrialDerivatives.tex</vh></v>
 </v>
 </v>
 </vnodes>
@@ -182,5 +186,6 @@ else:
 <t tx="gcross.20090803112359.1301"></t>
 <t tx="gcross.20090817175122.1537"></t>
 <t tx="gcross.20090827093130.1303"></t>
+<t tx="gcross.20090904125219.1313"></t>
 </tnodes>
 </leo_file>
