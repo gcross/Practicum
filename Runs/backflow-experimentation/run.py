@@ -23,6 +23,61 @@ import itertools
 #@nl
 
 #@+others
+#@+node:gcross.20090908092630.1786:class FeynmanEffectivePotentialEstimate
+class FeynmanEffectivePotentialEstimate(SliceEnergyEstimate):
+    #@    @+others
+    #@+node:gcross.20090908092630.1787:update
+    def update(self):
+        system = self.system
+
+        x = system.x[self.slice_number:self.slice_number+1]
+
+        numeric_gradients = zeros(x.shape,dtype=double,order='Fortran')
+        vpif.angular_momentum.accumulate_gradient_feynman(
+            x,
+            system.rotation_rate,
+            system.rotation_plane_axis_1,system.rotation_plane_axis_2,
+            numeric_gradients
+        )
+        U = zeros(x.shape[:2],dtype=double,order='Fortran')
+        vpif.angular_momentum.accumulate_effective_potential(
+            numeric_gradients,
+            system.frame_angular_velocity,system.lambda_,
+            U
+        )
+
+        self.add(sum(U))
+    #@-node:gcross.20090908092630.1787:update
+    #@-others
+#@-node:gcross.20090908092630.1786:class FeynmanEffectivePotentialEstimate
+#@+node:gcross.20090908092630.1790:class BackflowEffectivePotentialEstimate
+class BackflowEffectivePotentialEstimate(SliceEnergyEstimate):
+    #@    @+others
+    #@+node:gcross.20090908092630.1791:update
+    def update(self):
+        system = self.system
+
+        x = system.x[self.slice_number:self.slice_number+1]
+        xij2 = system.xij2[self.slice_number:self.slice_number+1]
+
+        backflow_coefficient = -system.backflow_coefficient*system.rotation_rate
+        numeric_gradients = vpif.hard_sphere_interaction.compute_gradient_backflow(
+            x,xij2,
+            system.hard_sphere_radius,backflow_coefficient,
+            system.rotation_plane_axis_1,system.rotation_plane_axis_2
+        )
+
+        U = zeros(x.shape[:2],dtype=double,order='Fortran')
+        vpif.angular_momentum.accumulate_effective_potential(
+            numeric_gradients,
+            system.frame_angular_velocity,system.lambda_,
+            U
+        )
+
+        self.add(sum(U))
+    #@-node:gcross.20090908092630.1791:update
+    #@-others
+#@-node:gcross.20090908092630.1790:class BackflowEffectivePotentialEstimate
 #@+node:gcross.20090902085220.2388:class RotationEffectivePotential
 class RotationEffectivePotential(Physics):
     #@    @+others
@@ -35,38 +90,37 @@ class RotationEffectivePotential(Physics):
         self.rotation_plane_axis_1 = system.rotation_plane_axis_1
         self.rotation_plane_axis_2 = system.rotation_plane_axis_2
         self.frame_angular_velocity = system.frame_angular_velocity
-        self.number_of_rotating_particles = system.number_of_rotating_particles
+
+        self.rotation_rate = float(system.number_of_rotating_particles) / system.number_of_particles
+        self.backflow_coefficient = -system.backflow_coefficient*self.rotation_rate
 
         self.lambda_ = system.lambda_
+
+        self.hard_sphere_radius = system.hard_sphere_radius
     #@-node:gcross.20090902085220.2391:__init__
     #@+node:gcross.20090903090230.2076:accumulate_potential
     def accumulate_potential(self,x,xij2,U,gradU):
-        vpif.angular_momentum.accum_potential_via_numeric_diffs(
+
+        numeric_gradients = vpif.hard_sphere_interaction.compute_gradient_backflow(
             x,xij2,
+            self.hard_sphere_radius,self.backflow_coefficient,
+            self.rotation_plane_axis_1,self.rotation_plane_axis_2
+        )
+
+    #    numeric_gradients = zeros(x.shape,dtype=double,order='Fortran')
+
+        vpif.angular_momentum.accumulate_gradient_feynman(
+            x,
+            self.rotation_rate,
+            self.rotation_plane_axis_1,self.rotation_plane_axis_2,
+            numeric_gradients
+        )
+        vpif.angular_momentum.accumulate_effective_potential(
+            numeric_gradients,
             self.frame_angular_velocity,self.lambda_,
-            self.compute_phase,
             U
         )
     #@-node:gcross.20090903090230.2076:accumulate_potential
-    #@+node:gcross.20090903090230.2067:compute_phase
-    def compute_phase(self,x,xij2):
-        gradient_of_log_trial_fn, _ = self.system.compute_trial_derivatives(x,xij2)
-        return  \
-            vpif.angular_momentum.compute_feynman_phase_with_correction(
-                x,xij2,gradient_of_log_trial_fn,
-                self.number_of_rotating_particles,
-                self.rotation_plane_axis_1,self.rotation_plane_axis_2
-            )
-    #@+at
-    # def compute_phase(self,x,xij2):
-    #     return \
-    #         vpif.angular_momentum.compute_feynman_phase(
-    #             x,self.number_of_rotating_particles,
-    #             self.rotation_plane_axis_1,self.rotation_plane_axis_2
-    #         )
-    #@-at
-    #@@c
-    #@-node:gcross.20090903090230.2067:compute_phase
     #@-others
 #@-node:gcross.20090902085220.2388:class RotationEffectivePotential
 #@-others
@@ -77,14 +131,15 @@ configuration = {
     # System parameters
     "number_of_slices": 102,
     "lambda_": 0.5,
-    "number_of_dimensions": 2,
-    "initial_particle_distribution_size": 16,
+    "number_of_dimensions": 3,
+    "initial_particle_distribution_size": 0.1,
     # Angular momentum parameters
     "rotation_plane_axis_1": 1,
     "rotation_plane_axis_2": 2,
+    "frame_angular_velocity": 0,
     # Run parameters
     "total_number_of_observations": 10000,
-    "number_of_prethermalization_steps": 1000,
+    "number_of_prethermalization_steps": 2000,
     # Move parameters
     "dM": 16,
     "move_type_probabilities": [0.9,0.1,0],
@@ -115,40 +170,47 @@ system_properties_message = """\
 Examining system with
     *) {number_of_particles} particles;
     *) hard core bosons of radius {hard_sphere_radius};
-    *) a frame rotating with velocity {frame_angular_velocity};
+    *) a backflow correction coefficient of {backflow_coefficient};
     *) and {number_of_rotating_particles} particles rotating"""
 #@-node:gcross.20090828201103.2130:<< System properties message >>
 #@nl
 
 output_root_directory = sys.argv[1]
 
-for hard_sphere_radius in [0]:
-    for number_of_particles in [1]:
-        for frame_angular_velocity in [0]: #[1]: #8,16]:
-            for number_of_rotating_particles in xrange(number_of_particles+1):
+for hard_sphere_radius in [0.01]:#,0.03,0.1]:
+    for number_of_particles in [10]:
+        for backflow_coefficient in [52]: #[40,50,60,70]:
+            for number_of_rotating_particles in [0,5,10]: #xrange(number_of_particles+1):
                 #@                << Run simulation for given parameters >>
                 #@+node:gcross.20090828201103.1784:<< Run simulation for given parameters >>
-                my_directory = "{output_root_directory}/{number_of_particles}/{hard_sphere_radius}/{frame_angular_velocity}".format(**vars()) 
+                my_directory = "{output_root_directory}/{number_of_particles}/{hard_sphere_radius}/{backflow_coefficient}".format(**vars()) 
                 if (my_rank == 0):
                     print
                     print system_properties_message.format(**vars())
 
-                for parameter_name in ["hard_sphere_radius","number_of_particles","frame_angular_velocity","number_of_rotating_particles"]:
+                for parameter_name in [
+                        "hard_sphere_radius",
+                        "number_of_particles",
+                        "backflow_coefficient",
+                        "number_of_rotating_particles"
+                    ]:
                     configuration[parameter_name] = vars()[parameter_name]
 
                 system = System(**configuration)
+                system.rotation_rate = system.number_of_rotating_particles / system.number_of_particles
                 #@<< Initialize physics >>
                 #@+node:gcross.20090902085220.2353:<< Initialize physics >>
                 for physics in [
                     HarmonicOscillator,
                     RotationEffectivePotential,
                     SecondOrderGreensFunction,
-                    #HardSphereInteraction
+                    HardSphereInteraction
                     ]: system.add_physics(physics)
                 #@-node:gcross.20090902085220.2353:<< Initialize physics >>
                 #@nl
                 #@<< Initialize observables >>
                 #@+node:gcross.20090828201103.1785:<< Initialize observables >>
+
                 for slice_name, slice_number in [("left",0),("center",system.center_slice_number),("right",system.number_of_slices-1)]:
                     density_slice_subdirectory = "{my_directory}/{number_of_rotating_particles}/{slice_name}".format(**vars())
                     for observable in [
@@ -172,6 +234,16 @@ for hard_sphere_radius in [0]:
                                 radial_densities_histogram_bin_count,
                                 density_slice_subdirectory + "/radial-density"
                             ),
+                            FeynmanEffectivePotentialEstimate(
+                                slice_number,
+                            "{my_directory}/{slice_name}/feynman-potential".format(**vars()),
+                                number_of_rotating_particles
+                            ),
+                            BackflowEffectivePotentialEstimate(
+                                slice_number,
+                            "{my_directory}/{slice_name}/backflow-potential".format(**vars()),
+                                number_of_rotating_particles
+                            ),
                             #@+at
                             # EffectivePotentialSliceEnergyEstimate(
                             #     slice_number,
@@ -193,31 +265,19 @@ for hard_sphere_radius in [0]:
                             #@nonl
                             #@-node:gcross.20090903090230.2080:<< Slice observables >>
                             #@nl
-                        ] + [
-                #@+at
-                #             AverageAxialDistanceEstimate(
-                #                 axis_number,
-                #                 slice_number,
-                # "{my_directory}/{slice_name}/average-{axis_name}".format(**vars()),
-                #                 number_of_rotating_particles
-                #             ) for (axis_number,axis_name) in 
-                # enumerate(["x","y","x","w"][:system.number_of_dimensions])
-                #@-at
-                #@@c        
-                        ] + [
-                            AverageRadiusEstimate(
-                                slice_number,
-                                "{my_directory}/{slice_name}/average-radius".format(**vars()),
-                                number_of_rotating_particles
-                            ),
                         ]:
+                        pass
                         system.add_observable(observable)
 
                 center_slice = system.number_of_slices // 2
                 for observable in  [
-                    #ParticleSeparationHistogram(center_slice,1,100,"{my_directory}/{number_of_rotating_particles}/particle-separation".format(**vars())),
+                    ParticleSeparationHistogram(
+                        0,
+                        5,100,
+                        "{my_directory}/{number_of_rotating_particles}/left/particle-separation".format(**vars())
+                    ),
                     #AverageParticleSeparationEstimate(center_slice,"{my_directory}/particle-separation".format(**vars()),center_slice),
-                    TotalEnergyEstimate("{my_directory}/total-energy".format(**vars()),number_of_rotating_particles),
+                    #TotalEnergyEstimate("{my_directory}/total-energy".format(**vars()),number_of_rotating_particles),
                     ]: system.add_observable(observable)
                 #@-node:gcross.20090828201103.1785:<< Initialize observables >>
                 #@nl

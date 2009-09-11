@@ -10,6 +10,13 @@
 <find_panel_settings/>
 <vnodes>
 <v t="gcross.20090818114910.1224" str_leo_pos="1"><vh>@chapters</vh></v>
+<v t="gcross.20090911091023.2426"><vh>@path rotation-investigation-with-wall</vh>
+<v t="gcross.20090911091023.2427"><vh>@thin run.py</vh></v>
+</v>
+<v t="gcross.20090908092630.1850"><vh>@path backflow-experimentation-megarun</vh>
+<v t="gcross.20090908092630.1907"><vh>&lt;&lt; Run parameters &gt;&gt;</vh></v>
+<v t="gcross.20090908092630.1851"><vh>@thin run.py</vh></v>
+</v>
 <v t="gcross.20090828201103.1779"><vh>@path backflow-experimentation</vh>
 <v t="gcross.20090828201103.1780"><vh>@thin run.py</vh></v>
 </v>
@@ -50,5 +57,11 @@
 <t tx="gcross.20090827130017.1478"></t>
 <t tx="gcross.20090828201103.1779"></t>
 <t tx="gcross.20090903090230.2054"></t>
+<t tx="gcross.20090908092630.1850"></t>
+<t tx="gcross.20090908092630.1907">for harmonic_oscillator_strength in [1,3,10,30,100]:
+    for hard_sphere_radius in [0,0.01,0.03,0.1]:
+        for number_of_particles in [64,128,256]:
+            for backflow_coefficient in [0,0.01,0.03,0.1,0.3,1,3,10,30,100,-0.01,-0.03,-0.1,-0.3,-1,-3,-10,-30,-100]:</t>
+<t tx="gcross.20090911091023.2426"></t>
 </tnodes>
 </leo_file>
