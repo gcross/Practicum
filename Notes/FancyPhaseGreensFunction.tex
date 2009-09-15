@@ -1,0 +1,70 @@
+%@+leo-ver=4-thin
+%@+node:gcross.20090914154930.2017:@thin FancyPhaseGreensFunction.tex
+%@@language latex
+\documentclass[onecolumn,amsmath,amssymb,nofootinbib,floatfix]{revtex4}
+
+\input{notes-prelude.in}
+
+\begin{document}
+
+According to Schulman (Physics Review Letters, volume 49, number 9, page 599), the Green's function of an infinite half-plane at angle $\frac{3\pi}{2}$ is
+$$G(\vec{b},t;\vec{a}) = \frac{e^{i(\rho_a+\rho_b)^2/4\hbar t}}{4\pi i \hbar t}\paren{h(-m)e^{-im^2} - h(-n)e^{-in^2}},$$
+where
+$$\om_1 := \frac{\theta_a+\theta_b}{2}, \quad \om_2 := \frac{\theta_a - \theta_b - \pi}{2}, \quad m := \sqrt{\frac{\rho_a\rho_b}{t\hbar}}\sin \om_2, \quad n :=\sqrt{\frac{\rho_a\rho_b}{t\hbar}}\sin \om_1,$$
+and $h(x)$ is the Fresnel integral, given by
+$$h(u) := \frac{1}{\sqrt{i\pi}} \int_{-\infty}^{u} e^{-iv^2}\,dv.$$
+Factor out $e{-im^2}$ and let $F:= \paren{h(-m) - h(-n)e^{-i(n^2-m^2)}}$, so that
+$$
+\begin{aligned}
+G(\vec{b},t;\vec{a})
+&= \frac{e^{i(\rho_a+\rho_b)^2/4\hbar t}}{4\pi i \hbar t}e^{-im^2}\cdot F \\
+&= \frac{e^{i(\rho_a+\rho_b)^2/4\hbar t}}{4\pi i \hbar t}e^{-i\rho_a\rho_b\sin^2\om_2/t\hbar^2}\cdot F \\
+&= \frac{e^{i\left[\rho_a^2+2\rho_a\rho_b+\rho_b^2-4\rho_a\rho_b\cos^2\paren{\frac{\theta_a-\theta_b}{2}}\right]/4\hbar t}}{4\pi i \hbar t}\cdot F \\
+&= \frac{e^{i\left[\rho_a^2+\rho_b^2-2\rho_a\rho_b\cos\paren{\theta_a-\theta_b}\right]/4\hbar t}}{4\pi i \hbar t}\cdot F \\
+&= \frac{e^{-(\vec{a}-\vec{b})^2/4\hbar it}}{4\pi \hbar it}\cdot F \\
+\end{aligned}
+$$
+Thus we see that the Green's function factors into the free particle propagator times a factor $F$.  We can simplify $F$ by observing that
+$$
+\begin{aligned}
+n^2-m^2
+&= \frac{\rho_a\rho_b}{t\hbar}\left[\sin^2\paren{\frac{\theta_a+\theta_b}{2}} - \cos^2\paren{\frac{\theta_a-\theta_b}{2}}\right] \\
+&= \frac{\rho_a\rho_b}{2t\hbar}\left[1-\cos(\theta_a+\theta_b)-1-\cos(\theta_a-\theta_b)\right] \\
+&= \frac{\rho_a\rho_b}{2t\hbar}\left[\cos\theta_a\cos\theta_b - \sin\theta_a\sin\theta_b + \cos\theta_a\cos\theta_a + \sin\theta_a\sin\theta_a\right] \\
+&= \frac{\rho_a\rho_b}{t\hbar}\cos\theta_a\cos\theta_b \\
+&= \frac{x_a x_b}{t\hbar}\\
+\end{aligned}
+$$
+and so
+$F := h(-m)-h(-n)e^{-ix_a x_b/t\hbar}.$
+Now we take a second look at the Fresnel integral, and observe in particular that
+$$
+\begin{aligned}
+h(-m)
+&= \frac{1}{\sqrt{i\pi}}\int_{-\infty}^{-\sqrt{\frac{\rho_a\rho_b}{t\hbar}}\sin\om_2} e^{iv^2}\,dv \\
+&= \frac{1}{\sqrt{i\pi}}\int_{-\infty}^{-\sqrt{\frac{\rho_a\rho_b}{t\hbar}}\sin\om_2} e^{-\paren{v/\sqrt{i}}^2}\,dv \\
+&= \frac{1}{\sqrt{\pi}}\int_{-\infty}^{-\sqrt{\frac{\rho_a\rho_b}{it\pi\hbar}}\sin\om_2} e^{-v^2}\,dv \\
+&= \half\frac{2}{\sqrt{\pi}}\int_{\sqrt{\frac{\rho_a\rho_b}{it\pi\hbar}}\sin\om_2}^{\infty} e^{-v^2}\,dv \\
+&= \half\text{erfc}\paren{\sqrt{\frac{\rho_a\rho_b}{it\pi\hbar}}\sin\om_2}
+\end{aligned}
+$$
+Ergo, our Green's function can be expressed in the form,
+$$
+\begin{aligned}
+G(\vec{b},t;\vec{a})
+& = \frac{e^{-(\vec{a}-\vec{b})^2/4\hbar it}}{4\pi \hbar it}
+\cdot \half\curlybracket{\text{erfc}\squarebracket{\sqrt{\frac{\rho_a\rho_b}{\pi\hbar it}}\sin\om_2}-\text{erfc}\squarebracket{\sqrt{\frac{\rho_a\rho_b}{\pi\hbar it}}\sin\om_1} e^{x_a x_b/it\hbar}}, \\
+& = \frac{e^{-(\vec{a}-\vec{b})^2/4\hbar it}}{4\pi \hbar it}
+\cdot \half\curlybracket{\text{erfc}\squarebracket{-\sqrt{\frac{\rho_a\rho_b}{\pi\hbar it}}\cos\paren{\frac{\theta_a-\theta_b}{2}}}-\text{erfc}\squarebracket{\sqrt{\frac{\rho_a\rho_b}{\pi it\hbar}}\sin\paren{\frac{\theta_a+\theta_b}{2}}} e^{x_a x_b/\hbar it}}, \\
+\end{aligned}
+$$
+
+Perform a Wick rotation $it\to\tau$ and we obtain the imaginary time Green's function;  while we are at it, let $\theta_a\to \theta_a+\pi/2$ and $\theta_a\to\theta_b+\pi/2$ so that the hard wall is at $\theta=0$, and let $\lambda:=\hbar/2m=\hbar$;  then our final Green's function becomes
+$$G'(\vec{b},\tau;\vec{a}) = \frac{e^{-(\vec{a}-\vec{b})^2/4\lambda \tau}}{4\pi \lambda \tau}
+\cdot \half\curlybracket{\text{erfc}\squarebracket{-\sqrt{\frac{\rho_a\rho_b}{\pi\lambda\tau}}\cos\paren{\frac{\theta_a-\theta_b}{2}}}-\text{erfc}\squarebracket{-\sqrt{\frac{\rho_a\rho_b}{\pi\lambda\tau}}\cos\paren{\frac{\theta_a+\theta_b}{2}}} e^{y_a y_b/\lambda\tau}}$$
+
+Note in particular that if $\theta_b=0$ then $G'(b\hat x,\tau;\vec{a})=0$, thus satisfying the hard wall boundary condition.
+
+\end{document}
+%@-node:gcross.20090914154930.2017:@thin FancyPhaseGreensFunction.tex
+%@-leo

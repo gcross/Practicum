@@ -65,8 +65,11 @@
 <v t="gcross.20090827093130.1303"><vh>ImaginaryPart.pdf</vh>
 <v t="gcross.20090827093130.1304"><vh>@thin ImaginaryPart.tex</vh></v>
 </v>
-<v t="gcross.20090904125219.1313" a="E"><vh>HardSphereTrialDerivatives.pdf</vh>
+<v t="gcross.20090904125219.1313"><vh>HardSphereTrialDerivatives.pdf</vh>
 <v t="gcross.20090904125219.1316"><vh>@thin HardSphereTrialDerivatives.tex</vh></v>
+</v>
+<v t="gcross.20090914154930.2015"><vh>FancyPhaseGreensFunction.pdf</vh>
+<v t="gcross.20090914154930.2017"><vh>@thin FancyPhaseGreensFunction.tex</vh></v>
 </v>
 </v>
 </vnodes>
@@ -187,5 +190,6 @@ else:
 <t tx="gcross.20090817175122.1537"></t>
 <t tx="gcross.20090827093130.1303"></t>
 <t tx="gcross.20090904125219.1313"></t>
+<t tx="gcross.20090914154930.2015"></t>
 </tnodes>
 </leo_file>

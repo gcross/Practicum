@@ -27,6 +27,7 @@ for name in [
     "MagneticFieldAnalogy",
     "TermResumming",
     "HardSphereTrialDerivatives",
+    "FancyPhaseGreensFunction",
   ]:
     dviOutput = env.DVI(source=name+'.tex', target=name+'.dvi')
     env.Alias('dvi', name+'.dvi')
