@@ -12,7 +12,7 @@
 We are working with a system in a rotating reference frame and no vector potential, so as has been computed in other notes we see that
 
 Consider the fixed phase form given by
-$$\atan\paren{\frac{\sum_{K\subseteq \{1\dots N\}\atop |K|=m} \sin\paren{\sum_{k\in K} \theta_k}}{\sum_{K\subseteq \{1\dots N\}\atop |K|=m} \cos\paren{\sum_{k\in K} \theta_k}}}\equiv\frac{S}{C},
+$$\arg\paren{\sum_{K\subseteq \{1\dots N\}\atop |K|=m} e^{i\paren{\sum_{k\in K} \theta_k}}}=\atan\paren{\frac{\sum_{K\subseteq \{1\dots N\}\atop |K|=m} \sin\paren{\sum_{k\in K} \theta_k}}{\sum_{K\subseteq \{1\dots N\}\atop |K|=m} \cos\paren{\sum_{k\in K} \theta_k}}}\equiv\frac{S}{C},
 $$
 where
 $$
@@ -23,6 +23,9 @@ s(K)&:=\sin\paren{\sum_{k\in K} \theta_k},\\
 c(K)&:=\cos\paren{\sum_{k\in K} \theta_k}.\\
 \end{aligned}
 $$
+
+\section{Phase gradient}
+
 Let $\partial_i$ be a shorthand for differentiating by the $i$-th angle, i.e. $\partial_i:=\pdrv{}{\theta_i}$.  Observe that
 $$
 \begin{aligned}
@@ -77,6 +80,18 @@ $$
 \partial_j\partial_i \paren{\atan\frac{S}{C}} &=
 \frac{-\delta_{ij}\text{Im}\left[e^{i\theta_i}\paren{\sum_k e^{i\theta_k}}^*\right] + \text{Im}\left[e^{i\theta_i}e^{-i\theta_j}\right]}{\left|\sum_k e^{i\theta_k}\right|^2}
 +2\frac{\text{Re}\left[e^{i\theta_i}\paren{\sum_k e^{i\theta_k}}^*\right]\text{Im}\left[e^{i\theta_j}\paren{\sum_k e^{i\theta_k}}^*\right]}{\left|\sum_k e^{i\theta_k}\right|^4}\\
+\end{aligned}
+$$
+
+\section{Amplitude gradient}
+
+We are now interested in computing the points where our phase function ceases to be analytic;  these correspond to zeros in $\sum_{K\subseteq \{1\dots N\}\atop |K|=m} e^{i\paren{\sum_{k\in K} \theta_k}}.$  We compute these zeros by finding the zeros of its square amplitude, $|\sum_{K\subseteq \{1\dots N\}\atop |K|=m} e^{i\paren{\sum_{k\in K} \theta_k}}|^2=C^2+S^2=0.$  To find the roots, it will be helpful to know the gradient, which is given by,
+$$
+\begin{aligned}
+\partial_i \paren{C^2+S^2}
+&= -2C\sum_{K',i\in K'} s(K') + 2S\sum_{K',i\in K'} c(K') \\
+&= -2\sum_{K,K',i\in K'} s(K'-K) \\
+&= -2\cdot\text{Im}\left[\paren{\sum_{K',i\in K'}\prod_{k'\in K'}e^{i\theta_{k'}}}\paren{\sum_{K}\prod_{k\in K}e^{i\theta_k}}^*\right]
 \end{aligned}
 $$
 
