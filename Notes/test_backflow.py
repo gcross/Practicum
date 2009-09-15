@@ -91,6 +91,38 @@ def gradient_backflow_numerator(a,r,rho,x,i,j,ip,kp):
 
     return (x[j,1]*d_kp0 - x[j,0]*d_kp1)*d_ipi - (x[i,1]*d_kp0 - x[i,0]*d_kp1)*d_ipj
 #@-node:gcross.20090907141528.1351:backflow_gradient_numerator
+#@+node:gcross.20090908092630.1346:backflow_gradient
+def backflow_gradient(a,r,rho,x,ip,kp):
+
+    number_of_particles = x.shape[0]
+
+    def C(i,j):
+        return x[i,0]*x[j,1]-x[i,1]*x[j,0]
+
+    def D(i,j):
+        return r(i,j)**3 * (1-a/r(i,j))
+
+    formula = 0
+    d_kp0 = 1 if kp == 0 else 0
+    d_kp1 = 1 if kp == 1 else 0
+    for j in xrange(number_of_particles):
+        if j == ip:
+            continue
+        C_ipj = C(ip,j)
+        D_ipj = D(ip,j)
+        rho_ip = rho(ip)
+        rho_j = rho(j)
+        r_ipj = r(ip,j)
+
+        formula += 1/D_ipj * (
+            (x[j,1]*d_kp0 - x[j,0]*d_kp1)*(1/rho_ip**2 - 1/rho_j**2)
+          - C_ipj * ((2*x[ip,kp]*(d_kp0+d_kp1)/rho_ip**4 + (x[ip,kp]-x[j,kp])/r_ipj**2 * (1/rho_ip**2 - 1/rho_j**2) * (3 + a/(r_ipj * (1 - a/r_ipj)))))
+        )
+
+    formula *= a
+
+    return formula
+#@-node:gcross.20090908092630.1346:backflow_gradient
 #@-node:gcross.20090904201537.1798:Formula Factories
 #@-others
 
@@ -101,16 +133,18 @@ try:
 except ImportError:
     pass
 
-
 #@<< Import needed modules >>
 #@+node:gcross.20090904201537.1564:<< Import needed modules >>
 import unittest
 from paycheck import *
-from numpy import array, dot
+from numpy.random import rand
 from sympy import *
+from numpy import array, dot, zeros, double
 import itertools
 from random import random, randint
 from __builtin__ import sum as pysum
+
+import vpif
 #@-node:gcross.20090904201537.1564:<< Import needed modules >>
 #@nl
 
@@ -606,7 +640,7 @@ def test_gradient_backflow_denominator_resummation(self,
             self.assertAlmostEqual(sum_over_ij.subs(substitutions),sum_over_j_only.subs(substitutions))
 #@-node:gcross.20090907141528.1369:test_gradient_backflow_denominator_resummation
 #@+node:gcross.20090907141528.1345:test_gradient_backflow
-@with_checker(number_of_calls=100)
+@with_checker(number_of_calls=10)
 def test_gradient_backflow(self,
     number_of_particles=irange(2,5),
     number_of_dimensions=irange(2,5),
@@ -618,37 +652,51 @@ def test_gradient_backflow(self,
 
     b = backflow(a,r,rho,x)
 
-    def C(i,j):
-        return x[i,0]*x[j,1]-x[i,1]*x[j,0]
-
-    def D(i,j):
-        return r(i,j)**3 * (1-a/r(i,j))
-
     substitutions = generate_random_substitutions(a,*(x.ravel()))
 
     for ip in xrange(number_of_particles):
         for kp in xrange(number_of_dimensions):
             computed = b.diff(x[ip,kp])
-            formula = 0
-            d_kp0 = 1 if kp == 0 else 0
-            d_kp1 = 1 if kp == 1 else 0
-            for j in xrange(number_of_particles):
-                if j == ip:
-                    continue
-                C_ipj = C(ip,j)
-                D_ipj = D(ip,j)
-                rho_ip = rho(ip)
-                rho_j = rho(j)
-                r_ipj = r(ip,j)
-
-                formula += 1/D_ipj * (
-                    (x[j,1]*d_kp0 - x[j,0]*d_kp1)*(1/rho_ip**2 - 1/rho_j**2)
-                  - C_ipj * ((2*x[ip,kp]*(d_kp0+d_kp1)/rho_ip**4 + (x[ip,kp]-x[j,kp])/r_ipj**2 * (1/rho_ip**2 - 1/rho_j**2) * (3 + a/(r_ipj * (1 - a/r_ipj)))))
-                )
-
-            formula *= a
+            formula = backflow_gradient(a,r,rho,x,ip,kp)
             self.assertAlmostEqual(computed.subs(substitutions),formula.subs(substitutions))
 #@-node:gcross.20090907141528.1345:test_gradient_backflow
+#@+node:gcross.20090908092630.1348:test_fortran_gradient_backflow
+@with_checker(number_of_calls=100)
+def test_fortran_gradient_backflow(self,
+    number_of_particles=irange(2,5),
+    number_of_dimensions=irange(2,5),
+    hard_sphere_radius=unit_interval_float,
+    rotation_rate=unit_interval_float,
+  ):
+    def make_compute_formula_gradient_backflow(a_value,x_values):
+        x = make_x(number_of_particles,number_of_dimensions)
+        a = Symbol('a')
+        r = make_r(x)
+        rho = make_rho(x)
+        substitutions = dict(itertools.izip(x.ravel(),x_values.ravel()))
+        substitutions[a] = a_value
+
+        def compute_formula_gradient_backflow(ip,kp):
+            formula = backflow_gradient(a,r,rho,x,ip,kp)
+            return formula.subs(substitutions)
+
+        return compute_formula_gradient_backflow
+
+    x = rand(number_of_particles,number_of_dimensions)
+    compute_formula_gradient_backflow = make_compute_formula_gradient_backflow(hard_sphere_radius,x)
+
+    x = array(x.reshape((1,)+x.shape),dtype=double,order='Fortran')
+    xij2 = zeros((1,number_of_particles,number_of_particles),dtype=double,order='Fortran')
+    vpif.xij.update_xij(xij2,x)
+
+    gradient_backflow = vpif.hard_sphere_interaction.compute_gradient_backflow(x,xij2,hard_sphere_radius,rotation_rate,1,2)
+
+    for ip in xrange(number_of_particles):
+        for kp in xrange(number_of_dimensions):
+            computed = gradient_backflow[0,ip,kp]
+            formula = compute_formula_gradient_backflow(ip,kp)
+            self.assertAlmostEqual(computed,rotation_rate*formula)
+#@-node:gcross.20090908092630.1348:test_fortran_gradient_backflow
 #@-node:gcross.20090904201537.1795:(verified)
 #@+node:gcross.20090907141528.1361:(unverified)
 #@-node:gcross.20090907141528.1361:(unverified)
