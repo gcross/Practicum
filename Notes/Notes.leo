@@ -36,6 +36,16 @@
 <v t="gcross.20090729160450.1254"><vh>pfun</vh></v>
 <v t="gcross.20090729160450.1251"><vh>check</vh></v>
 </v>
+<v t="gcross.20090916084821.1352"><vh>Analysis of nodal surface</vh>
+<v t="gcross.20090916085431.1357"><vh>Import needed modules</vh></v>
+<v t="gcross.20090916084821.1353"><vh>Initialize system</vh></v>
+<v t="gcross.20090916104053.1360"><vh>"Initialize system"</vh></v>
+<v t="gcross.20090916085431.1356"><vh>Run optimization</vh></v>
+</v>
+<v t="gcross.20090916114839.1820"><vh>Analysis of linear correction thingie</vh>
+<v t="gcross.20090916114839.1822"><vh>Import needed modules</vh></v>
+<v t="gcross.20090916114839.1823"><vh>Initialize system</vh></v>
+</v>
 </v>
 <v t="gcross.20090904201537.1554"><vh>@thin test_backflow.py</vh></v>
 <v t="gcross.20090730140239.1301"><vh>LaTeX Notes</vh>
@@ -86,6 +96,8 @@
 <t tx="gcross.20090728105516.1232">from numpy import *
 from scipy.misc import *
 from functools import *
+
+import vpif
 </t>
 <t tx="gcross.20090728110622.1239">def fprime(n,old_angles,replacement_angles):
     angles = old_angles.copy()
@@ -191,5 +203,74 @@ else:
 <t tx="gcross.20090827093130.1303"></t>
 <t tx="gcross.20090904125219.1313"></t>
 <t tx="gcross.20090914154930.2015"></t>
+<t tx="gcross.20090916084821.1352"></t>
+<t tx="gcross.20090916084821.1353">number_of_particles = 60
+number_of_rotating_particles = 30
+
+compute_amps_and_sum_syms_ampsq = vpif.angular_momentum.compute_amps_and_sum_syms_ampsq
+def f(x):
+    return compute_amps_and_sum_syms_ampsq(x.reshape(number_of_particles,2),number_of_rotating_particles,1,2)
+
+compute_gradient_fancy_amplitude = vpif.angular_momentum.compute_gradient_fancy_amplitude
+def fprime(x):
+    return compute_gradient_fancy_amplitude(x.reshape(number_of_particles,2),number_of_rotating_particles,1,2).ravel()
+</t>
+<t tx="gcross.20090916085431.1356">x0 = rand(number_of_particles,2)
+x0 /= sqrt(x0[:,0]**2 + x0[:,1]**2).reshape(number_of_particles,1) * 10
+
+#x = fmin_bfgs(f,x0.ravel(),fprime)
+#print f(x), norm(x0.ravel()-x)
+#x,value,info = fmin_l_bfgs_b(f,x0.ravel(),None,(),True,[(x-0.1,x+0.1) for x in x0.ravel()],maxfun=100)
+#print f(x), norm(x0.ravel()-x)
+#x,_,value = fmin_tnc(f,x0.ravel(),None,(),True,[(x-1,x+1) for x in x0.ravel()],messages=0)
+#print f(x), norm(x0.ravel()-x)
+
+#x = fmin_cobyla(f,x0.ravel(),(lambda x: 5-norm(x-x0.ravel())))
+#print f(x), norm(x-x0.ravel())
+</t>
+<t tx="gcross.20090916085431.1357">import vpif
+
+from scipy.optimize import *
+</t>
+<t tx="gcross.20090916104053.1360">setup = """
+import vpif
+
+from numpy.random import rand
+
+number_of_particles = 60
+number_of_rotating_particles = 5
+
+compute_amps_and_sum_syms_ampsq = vpif.angular_momentum.compute_amps_and_sum_syms_ampsq
+def f(x):
+    return compute_amps_and_sum_syms_ampsq(x.reshape(number_of_particles,2),number_of_rotating_particles,1,2)
+
+compute_gradient_fancy_amplitude = vpif.angular_momentum.compute_gradient_fancy_amplitude
+def fprime(x):
+    return compute_gradient_fancy_amplitude(x.reshape(number_of_particles,2),number_of_rotating_particles,1,2).ravel()
+
+x0 = rand(number_of_particles,2)
+"""
+</t>
+<t tx="gcross.20090916114839.1820"></t>
+<t tx="gcross.20090916114839.1822">from numpy.linalg import *
+
+import vpif
+</t>
+<t tx="gcross.20090916114839.1823">number_of_particles = 10
+number_of_rotating_particles = 5
+
+x0 = rand(number_of_particles,2)
+
+compute_amps_and_sum_syms = vpif.angular_momentum.compute_amps_and_sum_syms
+def f(x):
+    amplitude = compute_amps_and_sum_syms(x,number_of_rotating_particles,1,2)
+    return array((real(amplitude),imag(amplitude)))
+
+compute_gradient_fancy_amplitude = vpif.angular_momentum.compute_gradient_fancy_amplitude
+def fprime(x):
+    return compute_gradient_fancy_amplitude(x,number_of_rotating_particles)
+
+print norm(lstsq(fprime(x0).transpose(),f(x0))[0])
+</t>
 </tnodes>
 </leo_file>
