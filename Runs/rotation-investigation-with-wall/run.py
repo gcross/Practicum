@@ -54,8 +54,9 @@ class RotationEffectivePotential(Physics):
         )
 
         vpif.angular_momentum.accumulate_effective_potential(
-            numeric_gradients,
+            x, numeric_gradients,
             self.frame_angular_velocity,self.lambda_,
+            self.rotation_plane_axis_1,self.rotation_plane_axis_2,
             U
         )
     #@-node:gcross.20090911091023.2446:accumulate_potential
