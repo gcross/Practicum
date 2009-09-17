@@ -27,7 +27,7 @@ import itertools
 class RotationEffectivePotential(Physics):
     #@    @+others
     #@+node:gcross.20090911091023.2444:hooks
-    hooks = ["effective_potentials"]
+    hooks = ["effective_potentials","greens_functions"]
     #@-node:gcross.20090911091023.2444:hooks
     #@+node:gcross.20090911091023.2445:__init__
     def __init__(self,system):
@@ -60,6 +60,22 @@ class RotationEffectivePotential(Physics):
             U
         )
     #@-node:gcross.20090911091023.2446:accumulate_potential
+    #@+node:gcross.20090917122400.1690:compute_greens_function
+    def compute_greens_function(self,
+            x,xij2,
+            U,gradU2,
+            lam,dt,
+            slice_start,slice_end,
+            particle_number
+        ): return \
+            vpif.angular_momentum.compute_greens_function(
+                x,
+                lam, dt,
+                slice_start, slice_end,
+                self.number_of_rotating_particles,
+                self.rotation_plane_axis_1,self.rotation_plane_axis_2,
+            )
+    #@-node:gcross.20090917122400.1690:compute_greens_function
     #@-others
 #@-node:gcross.20090911091023.2443:class RotationEffectivePotential
 #@-others
