@@ -10,6 +10,9 @@
 <find_panel_settings/>
 <vnodes>
 <v t="gcross.20090818114910.1224" str_leo_pos="1"><vh>@chapters</vh></v>
+<v t="gcross.20090919132620.2793"><vh>@path magnetic-field-investigation</vh>
+<v t="gcross.20090919132620.2794"><vh>@thin run.py</vh></v>
+</v>
 <v t="gcross.20090911091023.2426"><vh>@path rotation-investigation-with-wall</vh>
 <v t="gcross.20090911091023.2427"><vh>@thin run.py</vh></v>
 </v>
@@ -63,5 +66,6 @@
         for number_of_particles in [64,128,256]:
             for backflow_coefficient in [0,0.01,0.03,0.1,0.3,1,3,10,30,100,-0.01,-0.03,-0.1,-0.3,-1,-3,-10,-30,-100]:</t>
 <t tx="gcross.20090911091023.2426"></t>
+<t tx="gcross.20090919132620.2793"></t>
 </tnodes>
 </leo_file>
