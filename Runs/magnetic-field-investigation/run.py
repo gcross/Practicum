@@ -47,8 +47,10 @@ class MagneticFieldPotential(Physics):
         numeric_gradients = zeros(x.shape,dtype=double,order='Fortran')
 
         vpif.angular_momentum.accumulate_gradient_fancy(
+        #vpif.angular_momentum.accumulate_gradient_fancy(
             x,
-            self.number_of_rotating_particles,
+            #self.number_of_rotating_particles,
+            float(self.number_of_rotating_particles)/self.system.number_of_particles,
             self.rotation_plane_axis_1,self.rotation_plane_axis_2,
             numeric_gradients
         )
@@ -136,9 +138,9 @@ Examining system with
 
 output_root_directory = sys.argv[1]
 
-for number_of_particles in [6]:
-    for magnetic_field_strength in [-2,-4]:
-        for number_of_rotating_particles in xrange(2*number_of_particles+1):
+for number_of_particles in [10]:
+    for magnetic_field_strength in [2,1,0,-1,-2,-4,-8,-16]:
+        for number_of_rotating_particles in xrange(10*number_of_particles+1):
             #@            << Run simulation for given parameters >>
             #@+node:gcross.20090919132620.2804:<< Run simulation for given parameters >>
             my_directory = "{output_root_directory}/{number_of_particles}/{magnetic_field_strength}".format(**vars()) 
