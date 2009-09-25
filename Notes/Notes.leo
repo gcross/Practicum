@@ -46,6 +46,9 @@
 <v t="gcross.20090916114839.1822"><vh>Import needed modules</vh></v>
 <v t="gcross.20090916114839.1823"><vh>Initialize system</vh></v>
 </v>
+<v t="gcross.20090922091313.2491"><vh>Alternative phase form</vh>
+<v t="gcross.20090922091313.2492"><vh>check derivative formula</vh></v>
+</v>
 </v>
 <v t="gcross.20090904201537.1554"><vh>@thin test_backflow.py</vh></v>
 <v t="gcross.20090730140239.1301"><vh>LaTeX Notes</vh>
@@ -271,6 +274,40 @@ def fprime(x):
     return compute_gradient_fancy_amplitude(x,number_of_rotating_particles)
 
 print norm(lstsq(fprime(x0).transpose(),f(x0))[0])
+</t>
+<t tx="gcross.20090922091313.2491"></t>
+<t tx="gcross.20090922091313.2492">from numpy import *
+from numpy.random import *
+from random import random
+from sympy import Symbol, sin
+import itertools
+import __builtin__
+
+n = 5
+
+angles = rand(n)
+
+thetas = [Symbol('theta{0}'.format(i)) for i in xrange(n)]
+
+S = 0
+
+for chosen_thetas in itertools.product(thetas,repeat=n):
+    S += sin(__builtin__.sum(chosen_thetas))
+
+values = rand(n)
+assignment = dict(zip(thetas,values))
+
+correct_gradient = [N(S.diff(theta).subs(assignment)) for theta in thetas]
+
+amplitudes = exp(1j*values)
+
+ampsum = sum(amplitudes)
+
+common_factor = n*ampsum**(n-1)*1j
+
+formula_gradient = [(common_factor*exp(1j*value)).imag for value in values]
+
+print formula_gradient, correct_gradient
 </t>
 </tnodes>
 </leo_file>

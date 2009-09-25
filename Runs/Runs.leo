@@ -13,11 +13,16 @@
 <v t="gcross.20090925123132.1807"><vh>@path rotation-investigation-critical</vh>
 <v t="gcross.20090925123132.1808"><vh>@thin run.py</vh></v>
 </v>
+<v t="gcross.20090922091313.2518"><vh>@path magnetic-field-alternative-investigation</vh>
+<v t="gcross.20090922091313.2519"><vh>@thin run.py</vh></v>
+</v>
 <v t="gcross.20090919132620.2793"><vh>@path magnetic-field-investigation</vh>
 <v t="gcross.20090919132620.2794"><vh>@thin run.py</vh></v>
+<v t="gcross.20090922091313.1799"><vh>@thin run2.py</vh></v>
 </v>
 <v t="gcross.20090918204102.1764"><vh>@path rotation-investigation-beyond-N</vh>
 <v t="gcross.20090918204102.1765"><vh>@thin run.py</vh></v>
+<v t="gcross.20090922091313.1757"><vh>@thin run2.py</vh></v>
 </v>
 <v t="gcross.20090911091023.2426"><vh>@path rotation-investigation-with-wall</vh>
 <v t="gcross.20090911091023.2427"><vh>@thin run.py</vh></v>
@@ -69,6 +74,7 @@
 <t tx="gcross.20090911091023.2426"></t>
 <t tx="gcross.20090918204102.1764"></t>
 <t tx="gcross.20090919132620.2793"></t>
+<t tx="gcross.20090922091313.2518"></t>
 <t tx="gcross.20090925123132.1807"></t>
 </tnodes>
 </leo_file>
