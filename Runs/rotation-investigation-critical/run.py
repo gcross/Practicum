@@ -1,9 +1,9 @@
 #! /bin/env python
 #@+leo-ver=4-thin
-#@+node:gcross.20090918204102.1765:@thin run.py
+#@+node:gcross.20090925123132.1808:@thin run.py
 #@@first
 #@<< Imports >>
-#@+node:gcross.20090918204102.1766:<< Imports >>
+#@+node:gcross.20090925123132.1809:<< Imports >>
 import gc
 
 import sys
@@ -21,17 +21,17 @@ import vpif
 import itertools
 
 from numpy import log
-#@-node:gcross.20090918204102.1766:<< Imports >>
+#@-node:gcross.20090925123132.1809:<< Imports >>
 #@nl
 
 #@+others
-#@+node:gcross.20090918204102.1767:class RotationEffectivePotential
+#@+node:gcross.20090925123132.1810:class RotationEffectivePotential
 class RotationEffectivePotential(Physics):
     #@    @+others
-    #@+node:gcross.20090918204102.1768:hooks
+    #@+node:gcross.20090925123132.1811:hooks
     hooks = ["effective_potentials"] #,"greens_functions"]
-    #@-node:gcross.20090918204102.1768:hooks
-    #@+node:gcross.20090918204102.1769:__init__
+    #@-node:gcross.20090925123132.1811:hooks
+    #@+node:gcross.20090925123132.1812:__init__
     def __init__(self,system):
         Physics.__init__(self,system)
         self.rotation_plane_axis_1 = system.rotation_plane_axis_1
@@ -42,15 +42,15 @@ class RotationEffectivePotential(Physics):
 
         self.lambda_ = system.lambda_
 
-    #@-node:gcross.20090918204102.1769:__init__
-    #@+node:gcross.20090918204102.1770:accumulate_potential
+    #@-node:gcross.20090925123132.1812:__init__
+    #@+node:gcross.20090925123132.1813:accumulate_potential
     def accumulate_potential(self,x,xij2,U,gradU):
 
         numeric_gradients = zeros(x.shape,dtype=double,order='Fortran')
 
-        vpif.angular_momentum.accumulate_gradient_feynman(
+        vpif.angular_momentum.accumulate_gradient_fancy(
             x,
-            float(self.number_of_rotating_particles)/self.system.number_of_particles,
+            self.number_of_rotating_particles,
             self.rotation_plane_axis_1,self.rotation_plane_axis_2,
             numeric_gradients
         )
@@ -61,8 +61,8 @@ class RotationEffectivePotential(Physics):
             self.rotation_plane_axis_1,self.rotation_plane_axis_2,
             U
         )
-    #@-node:gcross.20090918204102.1770:accumulate_potential
-    #@+node:gcross.20090918204102.1771:compute_greens_function
+    #@-node:gcross.20090925123132.1813:accumulate_potential
+    #@+node:gcross.20090925123132.1814:compute_greens_function
     def compute_greens_function(self,
             x,xij2,
             U,gradU2,
@@ -77,16 +77,16 @@ class RotationEffectivePotential(Physics):
                 self.number_of_rotating_particles,
                 self.rotation_plane_axis_1,self.rotation_plane_axis_2,
             )
-    #@-node:gcross.20090918204102.1771:compute_greens_function
+    #@-node:gcross.20090925123132.1814:compute_greens_function
     #@-others
-#@-node:gcross.20090918204102.1767:class RotationEffectivePotential
-#@+node:gcross.20090918204102.1772:class LogDistanceToWallHistogram
+#@-node:gcross.20090925123132.1810:class RotationEffectivePotential
+#@+node:gcross.20090925123132.1815:class LogDistanceToWallHistogram
 class LogDistanceToWallHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090918204102.1773:(fields)
+    #@+node:gcross.20090925123132.1816:(fields)
     left = 0
-    #@-node:gcross.20090918204102.1773:(fields)
-    #@+node:gcross.20090918204102.1774:__init__
+    #@-node:gcross.20090925123132.1816:(fields)
+    #@+node:gcross.20090925123132.1817:__init__
     def __init__(self,slice_number,maximum_distance,number_of_bins,filename):
         self.right = maximum_distance
         self.number_of_bins = number_of_bins
@@ -94,8 +94,8 @@ class LogDistanceToWallHistogram(Histogram):
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090918204102.1774:__init__
-    #@+node:gcross.20090918204102.1775:update
+    #@-node:gcross.20090925123132.1817:__init__
+    #@+node:gcross.20090925123132.1818:update
     def update(self):
         system = self.system
         distance = \
@@ -110,16 +110,16 @@ class LogDistanceToWallHistogram(Histogram):
             self.dndx,
             self.histogram
         )
-    #@-node:gcross.20090918204102.1775:update
+    #@-node:gcross.20090925123132.1818:update
     #@-others
-#@-node:gcross.20090918204102.1772:class LogDistanceToWallHistogram
-#@+node:gcross.20090918204102.1776:class GreenCorrectionHistogram
+#@-node:gcross.20090925123132.1815:class LogDistanceToWallHistogram
+#@+node:gcross.20090925123132.1819:class GreenCorrectionHistogram
 class GreenCorrectionHistogram(Histogram):
     #@    @+others
-    #@+node:gcross.20090918204102.1777:(fields)
+    #@+node:gcross.20090925123132.1820:(fields)
     left = 0
-    #@-node:gcross.20090918204102.1777:(fields)
-    #@+node:gcross.20090918204102.1778:__init__
+    #@-node:gcross.20090925123132.1820:(fields)
+    #@+node:gcross.20090925123132.1821:__init__
     def __init__(self,slice_number,maximum_distance,number_of_bins,filename):
         self.right = maximum_distance
         self.number_of_bins = number_of_bins
@@ -127,8 +127,8 @@ class GreenCorrectionHistogram(Histogram):
         self.slice_number = slice_number
         self.histogram = zeros((number_of_bins,),dtype='i',order='Fortran')
         self.filename = filename
-    #@-node:gcross.20090918204102.1778:__init__
-    #@+node:gcross.20090918204102.1779:update
+    #@-node:gcross.20090925123132.1821:__init__
+    #@+node:gcross.20090925123132.1822:update
     def update(self):
         system = self.system
         value = \
@@ -145,13 +145,13 @@ class GreenCorrectionHistogram(Histogram):
             self.dndx,
             self.histogram
         )
-    #@-node:gcross.20090918204102.1779:update
+    #@-node:gcross.20090925123132.1822:update
     #@-others
-#@-node:gcross.20090918204102.1776:class GreenCorrectionHistogram
+#@-node:gcross.20090925123132.1819:class GreenCorrectionHistogram
 #@-others
 
 #@<< System Configuration >>
-#@+node:gcross.20090918204102.1780:<< System Configuration >>
+#@+node:gcross.20090925123132.1823:<< System Configuration >>
 configuration = {
     # System parameters
     "number_of_slices": 202,
@@ -174,10 +174,10 @@ configuration = {
 configuration["harmonic_oscillator_coefficients"] = \
     array([1.0,]*configuration["number_of_dimensions"],dtype=double)
 #@nonl
-#@-node:gcross.20090918204102.1780:<< System Configuration >>
+#@-node:gcross.20090925123132.1823:<< System Configuration >>
 #@nl
 #@<< Histogram Configuration >>
-#@+node:gcross.20090918204102.1781:<< Histogram Configuration >>
+#@+node:gcross.20090925123132.1824:<< Histogram Configuration >>
 _1d_densities_histogram_left  = [-2,]*configuration["number_of_dimensions"]
 _1d_densities_histogram_right = [+2,]*configuration["number_of_dimensions"]
 _1d_densities_histogram_bin_count = 51
@@ -186,25 +186,25 @@ radial_densities_histogram_maximum_radius = 2.5
 radial_densities_histogram_bin_count = 51
 
 angular_densities_histogram_bin_count = 50
-#@-node:gcross.20090918204102.1781:<< Histogram Configuration >>
+#@-node:gcross.20090925123132.1824:<< Histogram Configuration >>
 #@nl
 #@<< System properties message >>
-#@+node:gcross.20090918204102.1782:<< System properties message >>
+#@+node:gcross.20090925123132.1825:<< System properties message >>
 system_properties_message = """\
 Examining system with
     *) {number_of_particles} particles;
     *) a frame rotating with velocity {frame_angular_velocity};
     *) and {number_of_rotating_particles} particles rotating"""
-#@-node:gcross.20090918204102.1782:<< System properties message >>
+#@-node:gcross.20090925123132.1825:<< System properties message >>
 #@nl
 
 output_root_directory = sys.argv[1]
 
-for number_of_particles in [6]:
-    for frame_angular_velocity in [2]:
-        for number_of_rotating_particles in xrange(0,3000+1,300):
+for number_of_particles in [5]:
+    for frame_angular_velocity in [0.975]:
+        for number_of_rotating_particles in xrange(10,20,1):
             #@            << Run simulation for given parameters >>
-            #@+node:gcross.20090918204102.1783:<< Run simulation for given parameters >>
+            #@+node:gcross.20090925123132.1826:<< Run simulation for given parameters >>
             my_directory = "{output_root_directory}/{number_of_particles}/{frame_angular_velocity}".format(**vars()) 
             if (my_rank == 0):
                 print
@@ -215,16 +215,16 @@ for number_of_particles in [6]:
 
             system = System(**configuration)
             #@<< Initialize physics >>
-            #@+node:gcross.20090918204102.1784:<< Initialize physics >>
+            #@+node:gcross.20090925123132.1827:<< Initialize physics >>
             for physics in [
                 HarmonicOscillator,
                 RotationEffectivePotential,
                 SecondOrderGreensFunction,
                 ]: system.add_physics(physics)
-            #@-node:gcross.20090918204102.1784:<< Initialize physics >>
+            #@-node:gcross.20090925123132.1827:<< Initialize physics >>
             #@nl
             #@<< Initialize observables >>
-            #@+node:gcross.20090918204102.1785:<< Initialize observables >>
+            #@+node:gcross.20090925123132.1828:<< Initialize observables >>
             for slice_name, slice_number in [("left",0),("center",system.center_slice_number),("right",system.number_of_slices-1)]:
                 density_slice_subdirectory = "{my_directory}/{number_of_rotating_particles}/{slice_name}".format(**vars())
                 for observable in [
@@ -264,14 +264,14 @@ for number_of_particles in [6]:
                 #AverageParticleSeparationEstimate(center_slice,"{my_directory}/particle-separation".format(**vars()),center_slice),
                 TotalEnergyEstimate("{my_directory}/total-energy".format(**vars()),number_of_rotating_particles),
                 ]: system.add_observable(observable)
-            #@-node:gcross.20090918204102.1785:<< Initialize observables >>
+            #@-node:gcross.20090925123132.1828:<< Initialize observables >>
             #@nl
             system.run()
             system.total_and_write_observables()
             del system.observables
             del system
             gc.collect()
-            #@-node:gcross.20090918204102.1783:<< Run simulation for given parameters >>
+            #@-node:gcross.20090925123132.1826:<< Run simulation for given parameters >>
             #@nl
-#@-node:gcross.20090918204102.1765:@thin run.py
+#@-node:gcross.20090925123132.1808:@thin run.py
 #@-leo
