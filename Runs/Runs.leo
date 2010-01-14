@@ -10,6 +10,15 @@
 <find_panel_settings/>
 <vnodes>
 <v t="gcross.20090818114910.1224" str_leo_pos="1"><vh>@chapters</vh></v>
+<v t="gcross.20100113111641.2613"><vh>@path phase-plus-hard-sphere</vh>
+<v t="gcross.20100113111641.2614"><vh>@thin run.py</vh></v>
+</v>
+<v t="gcross.20100106124611.2053"><vh>@path rotating-harmonic-trap-studies</vh>
+<v t="gcross.20100106124611.2054"><vh>@thin run.py</vh></v>
+</v>
+<v t="gcross.20091210143505.1830"><vh>@path better-phase</vh>
+<v t="gcross.20091210143505.1831"><vh>@thin run.py</vh></v>
+</v>
 <v t="gcross.20090925123132.1807"><vh>@path rotation-investigation-critical</vh>
 <v t="gcross.20090925123132.1808"><vh>@thin run.py</vh></v>
 </v>
@@ -63,7 +72,7 @@
 </v>
 </vnodes>
 <tnodes>
-<t tx="gcross.20090818114910.1224"></t>
+<t tx="gcross.20090818114910.1224" str_leo_pos="1"></t>
 <t tx="gcross.20090819091604.1233"></t>
 <t tx="gcross.20090819091604.1269"></t>
 <t tx="gcross.20090821120721.1288"></t>
@@ -76,5 +85,8 @@
 <t tx="gcross.20090919132620.2793"></t>
 <t tx="gcross.20090922091313.2518"></t>
 <t tx="gcross.20090925123132.1807"></t>
+<t tx="gcross.20091210143505.1830"></t>
+<t tx="gcross.20100106124611.2053"></t>
+<t tx="gcross.20100113111641.2613"></t>
 </tnodes>
 </leo_file>
